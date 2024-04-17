@@ -1,5 +1,5 @@
 package com.ohrray.controller;
-jpa auditing
+
 import com.ohrray.entity.Cart;
 import com.ohrray.service.CartService;
 import lombok.Getter;
