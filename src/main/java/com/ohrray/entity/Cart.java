@@ -3,7 +3,7 @@ package com.ohrray.entity;
 import jakarta.persistence.*;
 
 @Entity
-public class Cart {
+public class Cart extends BaseEntity {
     @Id
     @GeneratedValue
     @Column(name = "CART_ID")
