@@ -16,8 +16,8 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
-    @Getter("/cart")
-    Cart cart=new Cart();
+//    @GetMapping("/cart")
+//    Cart cart=new Cart();
 
 
 

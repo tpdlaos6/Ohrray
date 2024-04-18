@@ -1,8 +1,13 @@
 package com.ohrray.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
+@Builder
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Cart extends BaseEntity {
     @Id
     @GeneratedValue
@@ -14,11 +19,18 @@ public class Cart extends BaseEntity {
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    //게시글 정보
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PRODUCT_ID")
-    private Product product;
 
-    //상품갯수
-    private int productCount;
+    public void setMember(Member member){
+        this.member=member;
+    }
+
+
+    // 장바구니 생성
+    public Cart createCart(Member member){
+        Cart cart=new Cart();
+        cart.setMember(member);
+        return cart;
+    }
+
+
 }
