@@ -20,7 +20,7 @@ public class Cart extends BaseEntity {
     private Member member;
 
 
-    public void setMember(Member member){
+    public void changeMember(Member member){
         this.member=member;
     }
 
@@ -28,7 +28,7 @@ public class Cart extends BaseEntity {
     // 장바구니 생성
     public Cart createCart(Member member){
         Cart cart=new Cart();
-        cart.setMember(member);
+        cart.changeMember(member);
         return cart;
     }
 

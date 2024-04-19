@@ -29,13 +29,15 @@ public class CartProduct extends BaseEntity {
     // 장바구니에 담을 갯수
     private int productCount;
 
-    public void setCart(Cart cart){
+    public void changeCart(Cart cart){
         this.cart=cart;
     }
-    public void setProduct(Product product){
+
+    public void changeProduct(Product product){
         this.product=product;
     }
-    public void setProductCount(int productCount){
+
+    public void changeProductCount(int productCount){
         this.productCount=productCount;
     }
 
