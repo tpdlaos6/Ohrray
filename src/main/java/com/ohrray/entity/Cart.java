@@ -26,7 +26,7 @@ public class Cart extends BaseEntity {
 
 
     // 장바구니 생성
-    public Cart createCart(Member member){
+    public static Cart createCart(Member member){
         Cart cart=new Cart();
         cart.changeMember(member);
         return cart;

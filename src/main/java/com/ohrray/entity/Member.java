@@ -12,6 +12,7 @@ public class Member {
 
     @Id
     @Column(name = "MEMBER_ID")
+    @Setter
     private String email;
     //비밀번호
 

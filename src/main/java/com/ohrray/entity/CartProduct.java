@@ -41,9 +41,18 @@ public class CartProduct extends BaseEntity {
         this.productCount=productCount;
     }
 
+
+    // 카트에 담을 상품 생성
+    public static CartProduct createCartProduct(Cart cart, Product product, int count){
+        CartProduct cartProduct=new CartProduct();
+        cartProduct.changeCart(cart);
+        cartProduct.changeProduct(product);
+        cartProduct.changeProductCount(count);
+        return cartProduct;
+    }
+
     // 기존 상품을 추가로 담을 때
     public void addCount(int count){
         this.productCount += count;
     }
-
 }
