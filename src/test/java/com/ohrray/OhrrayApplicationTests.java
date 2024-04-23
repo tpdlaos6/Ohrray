@@ -30,6 +30,7 @@ class OhrrayApplicationTests {
 
 		product.setProductName("상품이름");
 		product.setProductPrice(10000);
+		product.setReadCount(5);
 
 		return productRepository.save(product);
 	}
