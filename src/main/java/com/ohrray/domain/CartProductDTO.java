@@ -1,10 +1,9 @@
 package com.ohrray.domain;
 
 import lombok.*;
-import org.antlr.v4.runtime.misc.NotNull;
 
 @Builder
-@Data
+@Setter @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartProductDTO {
@@ -14,4 +13,16 @@ public class CartProductDTO {
     private String color;
     private int size;
 
+    private Long cartProductId;
+    private String productName;
+    private int productPrice;
+    private String mainImg;
+
+    public CartProductDTO(Long cartProductId, String productName, int productPrice, int count, String mainImg){
+        this.cartProductId=cartProductId;
+        this.productName=productName;
+        this.productPrice=productPrice;
+        this.count=count;
+        this.mainImg=mainImg;
+    }
 }

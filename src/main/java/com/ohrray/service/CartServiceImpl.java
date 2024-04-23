@@ -13,7 +13,9 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -52,14 +54,31 @@ public class CartServiceImpl implements CartService{
             cartProductRepository.save(cartProduct1);
             return cartProduct1.getId();
         }
+    }
 
+    @Override
+    public List<CartProductDTO> cartList() {
+        List<CartProductDTO> list = cartProductRepository.findAll()
+                .stream()
+                .map(cartProduct ->
+                        CartProductDTO.builder()
+                                .cartProductId(cartProduct.getId())
+                                .productName(cartProduct.getProduct().getProductName())
+                                .productPrice(cartProduct.getProduct().getProductPrice())
+                                .count(cartProduct.getProductCount())
+                                .build()
+                        )
+                .collect(Collectors.toList());
+        return list;
+    }
+
+    // 장바구니 상품 수량 수정
+    @Override
+    public void updateCartProductCount(Long cartProductId, int productCount) {
+        CartProduct cartProduct=cartProductRepository.findById(cartProductId)
+                .orElseThrow(EntityNotFoundException::new);
+        cartProduct.updateCount(productCount);
     }
 
 
-
-//    @Override
-//    public List<CartDTO> getList() {
-//
-//        return null;
-//    }
 }
