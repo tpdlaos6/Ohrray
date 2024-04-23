@@ -52,7 +52,14 @@ public class CartProduct extends BaseEntity {
     }
 
     // 기존 상품을 추가로 담을 때
-    public void addCount(int count){
-        this.productCount += count;
+    public void addCount(int productCount){
+        this.productCount += productCount;
     }
+
+    // 장바구니 상품 수량 변경
+    public void updateCount(int productCount){
+        this.productCount=productCount;
+    }
+
+
 }

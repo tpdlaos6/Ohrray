@@ -59,4 +59,12 @@ class OhrrayApplicationTests {
 		assertEquals(cartProductDTO.getCount(), cartProduct.getProductCount());
 	}
 
+//	@Test
+//	@DisplayName("장바구니 리스트 테스트")
+//	public void cartList(){
+//		List<CartProduct> cartProductList=cartProductRepository.findAll();
+//		assertThat(cartProductList).isNotEmpty();
+//		assertThat(cartProductList.get(0).getProduct().)
+//	}
+
 }

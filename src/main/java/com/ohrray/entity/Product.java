@@ -45,7 +45,6 @@ public class Product {
     private int readCount;
 
 
-
     //등록일
     //수정일
 }
