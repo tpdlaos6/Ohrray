@@ -12,5 +12,6 @@ public interface CartService{
 
     public void updateCartProductCount(Long cartProductId, int productCount);
 
+    public void deleteCartProduct(CartProductDTO cartProductDTO);
 
 }
