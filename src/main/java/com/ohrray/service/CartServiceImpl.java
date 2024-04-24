@@ -80,5 +80,9 @@ public class CartServiceImpl implements CartService{
         cartProduct.updateCount(productCount);
     }
 
+    @Override
+    public void deleteCartProduct(CartProductDTO cartProductDTO) {
+        cartProductRepository.deleteById(cartProductDTO.getProductId());
+    }
 
 }
