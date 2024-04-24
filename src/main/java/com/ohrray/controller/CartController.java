@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -63,9 +65,10 @@ public class CartController {
         cartLists.add(new CartProductDTO(3L, "테스트3", 3000, 30, "이미지3"));
 
         // 상품별 총계
-        int productTotal=0;
+        Map<Long, Integer> productTotal=new HashMap<>();
         for(CartProductDTO cartProductDTO : cartLists){
-            productTotal=cartProductDTO.getProductPrice()*cartProductDTO.getCount();
+            int total=cartProductDTO.getProductPrice()*cartProductDTO.getCount();
+            productTotal.put(cartProductDTO.getCartProductId(), total);
         }
 
         // 전체 총계
@@ -73,7 +76,6 @@ public class CartController {
         for(CartProductDTO cartProductDTO : cartLists){
             subTotal+= cartProductDTO.getCount()*cartProductDTO.getProductPrice();
         }
-
 
         model.addAttribute("cartList", cartService.cartList());
         model.addAttribute("cartLists", cartLists);
@@ -102,6 +104,4 @@ public class CartController {
         cartService.deleteCartProduct(cartProductDTO);
         return "redirect: cart/list";
     }
-
-
 }

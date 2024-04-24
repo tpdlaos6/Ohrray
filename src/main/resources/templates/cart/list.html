@@ -357,7 +357,7 @@
                                 <td class="column-2" th:text="${cartLists.productName}"></td>
                                 <td class="column-3" th:text="${cartLists.productPrice}"></td>
                                 <td class="column-4" th:text="${cartLists.count}"></td>
-                                <td class="column-5" th:text="${productTotal}"></td>
+                                <td class="column-5" th:text="${productTotal[cartLists.cartProductId]}"></td>
                             </tr>
                             <tr class="table_row">
                                 <td class="column-1">
@@ -419,9 +419,7 @@
                         </div>
 
                         <div class="size-209">
-								<span class="mtext-110 cl2">
-									$79.65
-								</span>
+                            <span class="mtext-110 cl2" th:text="${'₩ ' + #numbers.formatDecimal(subTotal, 0, 'COMMA', 0, 'POINT')}"></span>
                         </div>
                     </div>
 
@@ -471,7 +469,7 @@
 
                     <div class="flex-w flex-t p-t-27 p-b-33">
                         <div class="size-208">
-								<span class="mtext-101 cl2">
+								<span class="mtext-101 cl2" >
 									Total:
 								</span>
                         </div>
