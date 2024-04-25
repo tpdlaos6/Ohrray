@@ -12,7 +12,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,12 +56,12 @@ public class CartController {
     @GetMapping("/list")
     public String cartList(Model model) {
 
-        List<CartProductDTO> cartLists=new ArrayList<>();
+        List<CartProductDTO> cartLists=cartService.cartList();
 
-        // 테스트용 더미데이터
-        cartLists.add(new CartProductDTO(1L, "테스트1", 1000, 5, "이미지1"));
-        cartLists.add(new CartProductDTO(2L, "테스트2", 3000, 10, "이미지2"));
-        cartLists.add(new CartProductDTO(3L, "테스트3", 3000, 30, "이미지3"));
+//        // 테스트용 더미데이터
+//        cartLists.add(new CartProductDTO(1L, "테스트1", 1000, 5, "이미지1"));
+//        cartLists.add(new CartProductDTO(2L, "테스트2", 3000, 10, "이미지2"));
+//        cartLists.add(new CartProductDTO(3L, "테스트3", 3000, 30, "이미지3"));
 
         // 상품별 총계
         Map<Long, Integer> productTotal=new HashMap<>();
@@ -77,7 +76,6 @@ public class CartController {
             subTotal+= cartProductDTO.getCount()*cartProductDTO.getProductPrice();
         }
 
-        model.addAttribute("cartList", cartService.cartList());
         model.addAttribute("cartLists", cartLists);
         model.addAttribute("productTotal", productTotal);
         model.addAttribute("subTotal", subTotal);
@@ -100,7 +98,7 @@ public class CartController {
     }
 
     @DeleteMapping("/delete")
-    public String deleteCartProduct(CartProductDTO cartProductDTO){
+    public String deleteCartProduct(@RequestBody CartProductDTO cartProductDTO){
         cartService.deleteCartProduct(cartProductDTO);
         return "redirect: cart/list";
     }

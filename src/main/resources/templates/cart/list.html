@@ -350,42 +350,31 @@
                                 <th class="column-3">Price</th>
                                 <th class="column-4">Quantity</th>
                                 <th class="column-5">Total</th>
+                                <th class="column-6"></th>
                             </tr>
 
                             <tr class="table_row" th:each="cartLists : ${cartLists}">
                                 <td class="column-1" th:text="${cartLists.mainImg}"></td>
                                 <td class="column-2" th:text="${cartLists.productName}"></td>
-                                <td class="column-3" th:text="${cartLists.productPrice}"></td>
-                                <td class="column-4" th:text="${cartLists.count}"></td>
-                                <td class="column-5" th:text="${productTotal[cartLists.cartProductId]}"></td>
-                            </tr>
-                            <tr class="table_row">
-                                <td class="column-1">
-                                    <div class="how-itemcart1">
-                                        <img src="/images/item-cart-04.jpg" alt="IMG">
-                                    </div>
-                                </td>
-                            <tr th:each="cartProduct : ${cartLists}">
-                                <td class="column-2" th:text="${cartProduct.productName}"></td>
-                            </tr>
-                                <td class="column-3">$ 36.00</td>
+                                <td class="column-3" th:text="${'₩ '+#numbers.formatDecimal(cartLists.productPrice, 0, 'COMMA', 0, 'POINT')}"></td>
                                 <td class="column-4">
                                     <div class="wrap-num-product flex-w m-l-auto m-r-0">
-                                        <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
+                                        <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m" data-id="${cartLists.cartProductId}">
                                             <i class="fs-16 zmdi zmdi-minus"></i>
                                         </div>
-
-                                        <input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product1" value="1">
-
-                                        <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
+                                        <input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product1" th:value="${cartLists.count}" data-price="${cartLists.productPrice}" data-id="${cartLists.cartProductId}">
+                                        <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m" data-id="${cartLists.cartProductId}">
                                             <i class="fs-16 zmdi zmdi-plus"></i>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="column-5">$ 36.00</td>
+                                <td class="column-5 product-total" data-id="${cartLists.cartProductId}" th:text="${'₩ '+#numbers.formatDecimal(productTotal[cartLists.cartProductId], 0, 'COMMA', 0, 'POINT')}"></td>
+                                <td class="column-6">
+                                    <button type="button" class="close" aria-label="Close">
+                                        <span aria-hidden="true" th:data-id="${cartLists.cartProductId}" onclick="deleteCartProduct(this)">&times;</span>
+                                    </button>
+                                </td>
                             </tr>
-
-
                         </table>
                     </div>
 
@@ -489,8 +478,6 @@
         </div>
     </div>
 </form>
-
-
 
 
 <!-- Footer -->
@@ -645,6 +632,70 @@
 			<i class="zmdi zmdi-chevron-up"></i>
 		</span>
 </div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // 수량 감소 버튼 이벤트 리스너
+        document.querySelectorAll('.btn-num-product-down').forEach(function(button) {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-id');
+                const tableRow = this.closest('.table_row'); // 가장 가까운 .table_row를 찾음
+                const inputField = tableRow.querySelector(`input[data-id='${productId}']`); // 해당 .table_row 내에서 input 필드를 찾음
+                let quantity = parseInt(inputField.value, 10);
+                if (quantity > 1) {
+                    inputField.value = --quantity;
+                    updateTotal(productId, quantity, tableRow); // tableRow를 updateTotal 함수에 전달
+                }
+            });
+        });
+
+        // 수량 증가 버튼 이벤트 리스너
+        document.querySelectorAll('.btn-num-product-up').forEach(function(button) {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-id');
+                const tableRow = this.closest('.table_row'); // 가장 가까운 .table_row를 찾음
+                const inputField = tableRow.querySelector(`input[data-id='${productId}']`); // 해당 .table_row 내에서 input 필드를 찾음
+                let quantity = parseInt(inputField.value, 10);
+                inputField.value = ++quantity;
+                updateTotal(productId, quantity, tableRow); // tableRow를 updateTotal 함수에 전달
+            });
+        });
+
+        // 총액 업데이트 함수
+        function updateTotal(productId, quantity, tableRow) {
+            let price = tableRow.querySelector(`input[data-id='${productId}']`).getAttribute('data-price');
+            // 쉼표 제거 후 Number로 변환
+            price = Number(price.replace(/,/g, ''));
+            const total = price * quantity;
+            // 총액을 문자열로 변환하여 업데이트
+            tableRow.querySelector(`.product-total[data-id='${productId}']`).textContent = `₩ ${total.toLocaleString()}`;
+        }
+
+
+    });
+
+    function deleteCartProduct(element) {
+        var cartProductId = $(element).data('id'); // data-id 속성에서 cartProductId를 가져옴
+
+        // AJAX 요청
+        $.ajax({
+            url: '/cart/delete', // Controller의 @DeleteMapping 경로와 일치해야 함
+            type: 'DELETE',
+            contentType: 'application/json',
+            data: JSON.stringify({ cartProductId: cartProductId }), // CartProductDTO에 맞게 데이터 전송
+            success: function(response) {
+                // 성공적으로 처리된 후의 동작 (예: 페이지 새로고침, 특정 요소 제거 등)
+                window.location.href = '/cart/list'; // 페이지를 장바구니 목록으로 리다이렉트
+            },
+            error: function(xhr, status, error) {
+                // 에러 처리
+                console.error(status, error);
+            }
+        });
+    }
+
+</script>
 
 <!--===============================================================================================-->
 <script src="/vendor/jquery/jquery-3.2.1.min.js"></script>

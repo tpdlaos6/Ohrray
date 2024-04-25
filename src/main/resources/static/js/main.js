@@ -214,15 +214,38 @@
 
     /*==================================================================
     [ +/- num product ]*/
-    $('.btn-num-product-down').on('click', function(){
-        var numProduct = Number($(this).next().val());
-        if(numProduct > 0) $(this).next().val(numProduct - 1);
-    });
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     const numProductInputs = document.querySelectorAll('.num-product');
+    //
+    //     function updateProductTotal(input) {
+    //         const price = parseInt(input.dataset.price); // 상품 가격 가져오기
+    //         const quantity = parseInt(input.value); // 현재 입력된 수량 가져오기
+    //         const total = price * quantity; // 총합 계산
+    //         const productTotalElement = document.querySelector('.product-total[data-id="'+input.name+'"]'); // 상품 ID에 해당하는 총 가격 요소 선택
+    //         productTotalElement.textContent = total+'원'; // 총 가격 업데이트
+    //     }
+    //
+    //     document.querySelectorAll('.btn-num-product-up, .btn-num-product-down').forEach(button => {
+    //         button.addEventListener('click', function () {
+    //             const input = this.parentElement.querySelector('.num-product');
+    //             let currentValue = parseInt(input.value);
+    //             if (this.classList.contains('btn-num-product-up')) {
+    //                 currentValue++;
+    //             } else if (this.classList.contains('btn-num-product-down')) {
+    //                 currentValue = Math.max(1, currentValue - 1); // 수량은 최소 1 이상
+    //             }
+    //             input.value = currentValue;
+    //             updateProductTotal(input);
+    //         });
+    //     });
+    //
+    //     numProductInputs.forEach(input => {
+    //         input.addEventListener('change', function () {
+    //             updateProductTotal(this);
+    //         });
+    //     });
+    // });
 
-    $('.btn-num-product-up').on('click', function(){
-        var numProduct = Number($(this).prev().val());
-        $(this).prev().val(numProduct + 1);
-    });
 
     /*==================================================================
     [ Rating ]*/
