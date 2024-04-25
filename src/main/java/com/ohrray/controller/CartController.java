@@ -85,7 +85,7 @@ public class CartController {
 
 
     // 장바구니 수량 변경
-    @PatchMapping(value = "/{cartProductId}")
+    @PatchMapping(value = "/cartProduct/{cartProductId}")
     @ResponseBody
     public ResponseEntity<?> updateCartProduct(@PathVariable("cartProductId") Long cartProductId, int productCount){
 
@@ -97,9 +97,18 @@ public class CartController {
         return new ResponseEntity<Long>(cartProductId, HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete")
-    public String deleteCartProduct(@RequestBody CartProductDTO cartProductDTO){
-        cartService.deleteCartProduct(cartProductDTO);
-        return "redirect: cart/list";
+    // 장바구니 상품 삭제
+    @DeleteMapping(value = "/cartProduct/{cartProductId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteCartProduct(@PathVariable ("cartProductId") Long cartProductId){
+        cartService.deleteCartProduct(cartProductId);
+        return new ResponseEntity<Long>(cartProductId, HttpStatus.OK);
     }
+
+//    public String deleteCartProduct(@RequestBody CartProductDTO cartProductDTO){
+//        cartService.deleteCartProduct(cartProductDTO.getCartProductId());
+//        return "redirect: cart/list";
+//    }
+
+
 }
