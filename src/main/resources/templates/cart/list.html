@@ -671,22 +671,22 @@
             // 총액을 문자열로 변환하여 업데이트
             tableRow.querySelector(`.product-total[data-id='${productId}']`).textContent = `₩ ${total.toLocaleString()}`;
         }
-
-
     });
 
-    function deleteCartProduct(element) {
-        var cartProductId = $(element).data('id'); // data-id 속성에서 cartProductId를 가져옴
 
-        // AJAX 요청
+    function deleteCartProduct(element){
+        var cartProductId = element.getAttribute('data-id'); // data-id 속성을 읽어옵니다.
+        console.log(cartProductId);
+        var url = "/cart/cartProduct/"+cartProductId; // URL 동적 생성
+
         $.ajax({
-            url: url, // Controller의 @DeleteMapping 경로와 일치해야 함
-            type: 'DELETE',
-            contentType: 'application/json',
-            data: JSON.stringify({ cartProductId: cartProductId }), // CartProductDTO에 맞게 데이터 전송
-            success: function(response) {
-                // 성공적으로 처리된 후의 동작 (예: 페이지 새로고침, 특정 요소 제거 등)
-                window.location.href = '/cart/list'; // 페이지를 장바구니 목록으로 리다이렉트
+            url: url,
+            type: "DELETE",
+            contentType: "application/json",
+            success: function(result, status) {
+                console.log(result);
+                // 성공적으로 처리된 후의 동작
+                window.location.href = "/cart/list"; // 페이지를 장바구니 목록으로 리다이렉트
             },
             error: function(xhr, status, error) {
                 // 에러 처리
@@ -694,6 +694,7 @@
             }
         });
     }
+
 
 </script>
 

@@ -10,6 +10,7 @@ import com.ohrray.repository.CartRepository;
 import com.ohrray.repository.MemberRepository;
 import com.ohrray.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -82,7 +83,7 @@ public class CartServiceImpl implements CartService{
 
     @Override
     public void deleteCartProduct(Long cartProductId) {
-        cartRepository.deleteById(cartProductId);
+        cartProductRepository.deleteById(cartProductId);
     }
 
 }

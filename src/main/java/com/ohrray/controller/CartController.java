@@ -58,6 +58,7 @@ public class CartController {
 
         List<CartProductDTO> cartLists=cartService.cartList();
 
+
 //        // 테스트용 더미데이터
 //        cartLists.add(new CartProductDTO(1L, "테스트1", 1000, 5, "이미지1"));
 //        cartLists.add(new CartProductDTO(2L, "테스트2", 3000, 10, "이미지2"));
