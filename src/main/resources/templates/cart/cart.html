@@ -124,13 +124,17 @@
                                     <td class="column-3">
                                         <div class="qty-btn d-flex">
                                             <div class="quantity">
-                                                <span class="qty-minus" th:attr="data-id=${cartLists.cartProductId}" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 1 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span>
-                                                <input type="number" class="qty-text" id="qty" step="1" min="1" max="300" name="quantity" value="1" th:attr="data-price=${productTotal}">
-                                                <span class="qty-plus" th:attr="data-id=${cartLists.cartProductId}" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span>
+                                                <div class="qty-minus" th:attr="data-id=${cartLists.cartProductId}" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 1 ) effect.value--;return false;">
+                                                    <i class="fa fa-minus" aria-hidden="true"></i>
+                                                </div>
+                                                <input type="number" class="qty-text" id="qty-${cartLists.cartProductId}" step="1" min="1" max="300" name="quantity" th:value="${cartLists.count}" th:attr="data-price=${productTotal}">
+                                                <div class="qty-plus" th:attr="data-id=${cartLists.cartProductId}" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;">
+                                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="column-4 product-total" id="totalPrice" data-id="${cartLists.cartProductId}" th:text="${'₩ '+#numbers.formatDecimal(productTotal[cartLists.cartProductId], 0, 'COMMA', 0, 'POINT')}"></td>
+                                    <td class="column-4 product-total" data-id="${cartLists.cartProductId}" th:text="${'₩ '+#numbers.formatDecimal(productTotal[cartLists.cartProductId], 0, 'COMMA', 0, 'POINT')}"></td>
                                     <td class="column-5">
                                         <button type="button" class="close" aria-label="Close">
                                             <span aria-hidden="true" th:data-id="${cartLists.cartProductId}" onclick="deleteCartProduct(this)">&times;</span>
@@ -252,64 +256,84 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 </body>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // 수량 감소 버튼 이벤트 리스너
-        document.querySelectorAll('.qty-minus').forEach(function(button) {
-            button.addEventListener('click', function() {
-                const productId = this.getAttribute('data-id');
-                const tableRow = this.closest('.table_row'); // 가장 가까운 .table_row를 찾음
-                const inputField = tableRow.querySelector(`input[data-id='${productId}']`); // 해당 .table_row 내에서 input 필드를 찾음
-                let quantity = parseInt(inputField.value, 10);
-                if (quantity > 1) {
-                    inputField.value = --quantity;
-                    updateTotal(productId, quantity, tableRow); // tableRow를 updateTotal 함수에 전달
-                }
-            });
-        });
-
-        // 수량 증가 버튼 이벤트 리스너
-        document.querySelectorAll('.qty-plus').forEach(function(button) {
-            button.addEventListener('click', function() {
-                const productId = this.getAttribute('data-id');
-                const tableRow = this.closest('.table_row'); // 가장 가까운 .table_row를 찾음
-                const inputField = tableRow.querySelector(`input[data-id='${productId}']`); // 해당 .table_row 내에서 input 필드를 찾음
-                let quantity = parseInt(inputField.value, 10);
-                inputField.value = ++quantity;
-                updateTotal(productId, quantity, tableRow); // tableRow를 updateTotal 함수에 전달
-            });
-        });
-
-        // 총액 업데이트 함수
-        function updateTotal(productId, quantity, tableRow) {
-            let price = tableRow.querySelector(`input[data-id='${productId}']`).getAttribute('data-price');
-            // 쉼표 제거 후 Number로 변환
-            price = Number(price.replace(/,/g, ''));
-            let total = price * quantity; // 총액 계산
-            // 총액을 문자열로 변환하여 업데이트
-            tableRow.querySelector(`.product-total[data-id='${productId}']`).textContent = `₩ ${total.toLocaleString()}`;
-        }
+    document.querySelectorAll('.qty-minus').forEach(function(button) {
+    button.addEventListener('click', function() {
+        const productId = this.getAttribute('data-id');
+        const tableRow = this.closest('.table_row');
+        const inputField = tableRow.querySelector(`#qty-${productId}`); // 수정됨
+        ...
     });
+});
+
+document.querySelectorAll('.qty-plus').forEach(function(button) {
+    button.addEventListener('click', function() {
+        const productId = this.getAttribute('data-id');
+        const tableRow = this.closest('.table_row');
+        const inputField = tableRow.querySelector(`#qty-${productId}`); // 수정됨
+        ...
+    });
+});
 
 
-    function deleteCartProduct(element){
-        var cartProductId = element.getAttribute('data-id'); // data-id 속성을 읽어옵니다.
-        console.log(cartProductId);
-        var url = "/cart/cartProduct/"+cartProductId; // URL 동적 생성
 
-        $.ajax({
-            url: url,
-            type: "DELETE",
-            contentType: "application/json",
-            success: function(result, status) {
-                console.log(result);
-                // 성공적으로 처리된 후의 동작
-                window.location.href = "/cart/list"; // 페이지를 장바구니 목록으로 리다이렉트
-            },
-            error: function(xhr, status, error) {
-                // 에러 처리
-                console.error(status, error);
-            }
-        });
-    }
+<!--    document.addEventListener('DOMContentLoaded', function () {-->
+<!--        // 수량 감소 버튼 이벤트 리스너-->
+<!--        document.querySelectorAll('.qty-minus').forEach(function(button) {-->
+<!--            button.addEventListener('click', function() {-->
+<!--                const productId = this.getAttribute('data-id');-->
+<!--                const tableRow = this.closest('.table_row'); // 가장 가까운 .table_row를 찾음-->
+<!--                const inputField = tableRow.querySelector(`input[data-id='${productId}']`); // 해당 .table_row 내에서 input 필드를 찾음-->
+<!--                let quantity = parseInt(inputField.value, 10);-->
+<!--                if (quantity > 1) {-->
+<!--                    inputField.value = &#45;&#45;quantity;-->
+<!--                    updateTotal(productId, quantity, tableRow); // tableRow를 updateTotal 함수에 전달-->
+<!--                }-->
+<!--            });-->
+<!--        });-->
+
+<!--        // 수량 증가 버튼 이벤트 리스너-->
+<!--        document.querySelectorAll('.qty-plus').forEach(function(button) {-->
+<!--            button.addEventListener('click', function() {-->
+<!--                const productId = this.getAttribute('data-id');-->
+<!--                const tableRow = this.closest('.table_row'); // 가장 가까운 .table_row를 찾음-->
+<!--                const inputField = tableRow.querySelector(`input[data-id='${productId}']`); // 해당 .table_row 내에서 input 필드를 찾음-->
+<!--                let quantity = parseInt(inputField.value, 10);-->
+<!--                inputField.value = ++quantity;-->
+<!--                updateTotal(productId, quantity, tableRow); // tableRow를 updateTotal 함수에 전달-->
+<!--            });-->
+<!--        });-->
+
+<!--        // 총액 업데이트 함수-->
+<!--        function updateTotal(productId, quantity, tableRow) {-->
+<!--            let price = tableRow.querySelector(`input[data-id='${productId}']`).getAttribute('data-price');-->
+<!--            // 쉼표 제거 후 Number로 변환-->
+<!--            price = Number(price.replace(/,/g, ''));-->
+<!--            let total = price * quantity; // 총액 계산-->
+<!--            // 총액을 문자열로 변환하여 업데이트-->
+<!--            tableRow.querySelector(`.product-total[data-id='${productId}']`).textContent = `₩ ${total.toLocaleString()}`;-->
+<!--        }-->
+<!--    });-->
+
+
+<!--    function deleteCartProduct(element){-->
+<!--        var cartProductId = element.getAttribute('data-id'); // data-id 속성을 읽어옵니다.-->
+<!--        console.log(cartProductId);-->
+<!--        var url = "/cart/cartProduct/"+cartProductId; // URL 동적 생성-->
+
+<!--        $.ajax({-->
+<!--            url: url,-->
+<!--            type: "DELETE",-->
+<!--            contentType: "application/json",-->
+<!--            success: function(result, status) {-->
+<!--                console.log(result);-->
+<!--                // 성공적으로 처리된 후의 동작-->
+<!--                window.location.href = "/cart/list"; // 페이지를 장바구니 목록으로 리다이렉트-->
+<!--            },-->
+<!--            error: function(xhr, status, error) {-->
+<!--                // 에러 처리-->
+<!--                console.error(status, error);-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
 </script>
 </html>

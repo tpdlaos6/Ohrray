@@ -8,6 +8,7 @@ import com.ohrray.repository.CartRepository;
 import com.ohrray.repository.MemberRepository;
 import com.ohrray.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ public class CartServiceImpl implements CartService{
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional
     @Override
     public Long addCart(CartDTO cartDTO, String email) {
 
@@ -53,6 +55,7 @@ public class CartServiceImpl implements CartService{
         }
     }
 
+
     @Override
     public List<CartDTO> cartList() {
         List<CartDTO> list = cartRepository.findAll()
@@ -70,6 +73,7 @@ public class CartServiceImpl implements CartService{
     }
 
     // 장바구니 상품 수량 수정
+    @Transactional
     @Override
     public void updateCartProductCount(Long cartProductId, int productCount) {
         Cart cart=cartRepository.findById(cartProductId)
@@ -77,6 +81,7 @@ public class CartServiceImpl implements CartService{
         cart.updateCount(productCount);
     }
 
+    @Transactional
     @Override
     public void deleteCartProduct(Long cartProductId) {
         cartRepository.deleteById(cartProductId);
