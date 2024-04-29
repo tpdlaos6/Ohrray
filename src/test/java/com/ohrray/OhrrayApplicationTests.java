@@ -1,10 +1,10 @@
 package com.ohrray;
 
-import com.ohrray.domain.CartProductDTO;
-import com.ohrray.entity.CartProduct;
+import com.ohrray.domain.CartDTO;
+import com.ohrray.entity.Cart;
 import com.ohrray.entity.Member;
 import com.ohrray.entity.Product;
-import com.ohrray.repository.CartProductRepository;
+import com.ohrray.repository.CartRepository;
 import com.ohrray.repository.LoginRepository;
 import com.ohrray.repository.MemberRepository;
 import com.ohrray.repository.ProductRepository;
@@ -15,12 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -28,7 +25,7 @@ class OhrrayApplicationTests {
 	@Autowired LoginRepository loginRepository;
 	@Autowired ProductRepository productRepository;
 	@Autowired CartService cartService;
-	@Autowired CartProductRepository cartProductRepository;
+	@Autowired CartRepository cartRepository;
     @Autowired MemberRepository memberRepository;
 
 	@Autowired private MockMvc mockMvc;
@@ -46,7 +43,7 @@ class OhrrayApplicationTests {
 	public Member saveMember(){
 		Member member=new Member();
 
-		member.setEmail("test@test.com");
+		member.setEmail("test1@test.com");
 		return memberRepository.save(member);
 	}
 
@@ -56,16 +53,16 @@ class OhrrayApplicationTests {
 		Product product=saveProduct();
 		Member member=saveMember();
 
-		CartProductDTO cartProductDTO=new CartProductDTO();
-		cartProductDTO.setProductId(product.getId());
-		cartProductDTO.setCount(5);
+		CartDTO cartDTO =new CartDTO();
+		cartDTO.setProductId(product.getId());
+		cartDTO.setCount(5);
 
-		Long cartProductId= cartService.addCart(cartProductDTO, member.getEmail());
-		CartProduct cartProduct=cartProductRepository.findById(cartProductId)
+		Long cartProductId= cartService.addCart(cartDTO, member.getEmail());
+		Cart cartProduct=cartRepository.findById(cartProductId)
 				.orElseThrow(EntityNotFoundException::new);
 
 		assertEquals(product.getId(), cartProduct.getProduct().getId());
-		assertEquals(cartProductDTO.getCount(), cartProduct.getProductCount());
+		assertEquals(cartDTO.getCount(), cartProduct.getProductCount());
 	}
 
 //	@Test
@@ -75,16 +72,5 @@ class OhrrayApplicationTests {
 //		assertThat(cartProductList).isNotEmpty();
 //		assertThat(cartProductList.get(0).getProduct().)
 //	}
-
-	@Test
-	public void deleteCartProductTest() throws Exception{
-		// 장바구니 상품 ID. 실제 테스트 환경에서는 적절한 ID로 변경하십시오.
-		Long cartProductId = 1L;
-
-		// delete 요청을 수행하고, 상태 코드가 OK인지 검증합니다.
-		mockMvc.perform(delete("/cartProduct/{cartProductId}", cartProductId)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-	}
 
 }

@@ -1,16 +1,13 @@
 package com.ohrray.service;
 
-import com.ohrray.domain.CartProductDTO;
+import com.ohrray.domain.CartDTO;
 import com.ohrray.entity.Cart;
-import com.ohrray.entity.CartProduct;
 import com.ohrray.entity.Member;
 import com.ohrray.entity.Product;
-import com.ohrray.repository.CartProductRepository;
 import com.ohrray.repository.CartRepository;
 import com.ohrray.repository.MemberRepository;
 import com.ohrray.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,15 +20,14 @@ import java.util.stream.Collectors;
 public class CartServiceImpl implements CartService{
 
     private final CartRepository cartRepository;
-    private final CartProductRepository cartProductRepository;
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
 
     @Override
-    public Long addCart(CartProductDTO cartProductDTO, String email) {
+    public Long addCart(CartDTO cartDTO, String email) {
 
         // 상품 조회. 상품이 없으면 예외처리
-        Product product = productRepository.findById(cartProductDTO.getProductId())
+        Product product = productRepository.findById(cartDTO.getProductId())
                 .orElseThrow(() -> new EntityNotFoundException("상품 없음"));
 
         // 회원 조회. 계정 없으면 예외처리
@@ -46,27 +42,27 @@ public class CartServiceImpl implements CartService{
         }
 
         // 카트 상품 조회. 카트 안에 동일 상품이 있으면 갯수만 추가. 없으면 카트 상품 생성
-        CartProduct cartProduct=cartProductRepository.findByCartIdAndProductId(cart.getId(), product.getId());
+        Cart cartProduct=cartRepository.findByIdAndProductId(cart.getId(), product.getId());
         if(cartProduct!=null){
-            cartProduct.addCount(cartProductDTO.getCount());
+            cartProduct.addCount(cartDTO.getCount());
             return cartProduct.getId();
         } else{
-            CartProduct cartProduct1=CartProduct.createCartProduct(cart,product,cartProductDTO.getCount());
-            cartProductRepository.save(cartProduct1);
+            Cart cartProduct1=Cart.createCartProduct(cart,product, cartDTO.getCount());
+            cartRepository.save(cartProduct1);
             return cartProduct1.getId();
         }
     }
 
     @Override
-    public List<CartProductDTO> cartList() {
-        List<CartProductDTO> list = cartProductRepository.findAll()
+    public List<CartDTO> cartList() {
+        List<CartDTO> list = cartRepository.findAll()
                 .stream()
-                .map(cartProduct ->
-                        CartProductDTO.builder()
-                                .cartProductId(cartProduct.getId())
-                                .productName(cartProduct.getProduct().getProductName())
-                                .productPrice(cartProduct.getProduct().getProductPrice())
-                                .count(cartProduct.getProductCount())
+                .map(cart ->
+                        CartDTO.builder()
+                                .cartProductId(cart.getProduct().getId())
+                                .productName(cart.getProduct().getProductName())
+                                .productPrice(cart.getProduct().getProductPrice())
+                                .count(cart.getProductCount())
                                 .build()
                         )
                 .collect(Collectors.toList());
@@ -76,14 +72,13 @@ public class CartServiceImpl implements CartService{
     // 장바구니 상품 수량 수정
     @Override
     public void updateCartProductCount(Long cartProductId, int productCount) {
-        CartProduct cartProduct=cartProductRepository.findById(cartProductId)
+        Cart cart=cartRepository.findById(cartProductId)
                 .orElseThrow(EntityNotFoundException::new);
-        cartProduct.updateCount(productCount);
+        cart.updateCount(productCount);
     }
 
     @Override
     public void deleteCartProduct(Long cartProductId) {
-        cartProductRepository.deleteById(cartProductId);
+        cartRepository.deleteById(cartProductId);
     }
-
 }

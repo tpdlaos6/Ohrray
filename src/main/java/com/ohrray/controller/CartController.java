@@ -1,6 +1,6 @@
 package com.ohrray.controller;
 
-import com.ohrray.domain.CartProductDTO;
+import com.ohrray.domain.CartDTO;
 import com.ohrray.service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ public class CartController {
 
     // 장바구니에 상품 담기
     @PostMapping(value = "/add")
-    public @ResponseBody ResponseEntity<?> addCartProduct(@RequestBody CartProductDTO cartProductDTO, BindingResult bindingResult, Principal principal){
+    public @ResponseBody ResponseEntity<?> addCartProduct(@RequestBody CartDTO cartDTO, BindingResult bindingResult, Principal principal){
 
         if(bindingResult.hasErrors()){
             StringBuilder sb = new StringBuilder();
@@ -43,7 +43,7 @@ public class CartController {
         Long cartItemId;
 
         try {
-            cartItemId = cartService.addCart(cartProductDTO, email);
+            cartItemId = cartService.addCart(cartDTO, email);
         } catch(Exception e){
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -53,10 +53,10 @@ public class CartController {
 
 
     // 장바구니 상품목록 조회
-    @GetMapping("/list")
+    @GetMapping("/cart")
     public String cartList(Model model) {
 
-        List<CartProductDTO> cartLists=cartService.cartList();
+        List<CartDTO> cartLists=cartService.cartList();
 
 
 //        // 테스트용 더미데이터
@@ -66,22 +66,22 @@ public class CartController {
 
         // 상품별 총계
         Map<Long, Integer> productTotal=new HashMap<>();
-        for(CartProductDTO cartProductDTO : cartLists){
-            int total=cartProductDTO.getProductPrice()*cartProductDTO.getCount();
-            productTotal.put(cartProductDTO.getCartProductId(), total);
+        for(CartDTO cartDTO : cartLists){
+            int total= cartDTO.getProductPrice()* cartDTO.getCount();
+            productTotal.put(cartDTO.getCartProductId(), total);
         }
 
         // 전체 총계
         int subTotal=0;
-        for(CartProductDTO cartProductDTO : cartLists){
-            subTotal+= cartProductDTO.getCount()*cartProductDTO.getProductPrice();
+        for(CartDTO cartDTO : cartLists){
+            subTotal+= cartDTO.getCount()* cartDTO.getProductPrice();
         }
 
         model.addAttribute("cartLists", cartLists);
         model.addAttribute("productTotal", productTotal);
         model.addAttribute("subTotal", subTotal);
 
-        return "cart/list";
+        return "cart/cart";
     }
 
 

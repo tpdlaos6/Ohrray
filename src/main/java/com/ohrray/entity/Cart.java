@@ -19,6 +19,13 @@ public class Cart extends BaseEntity {
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
+    //게시글 정보
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PRODUCT_ID")
+    private Product product;
+
+    //상품갯수
+    private int productCount;
 
     public void changeMember(Member member){
         this.member=member;
@@ -30,6 +37,38 @@ public class Cart extends BaseEntity {
         Cart cart=new Cart();
         cart.changeMember(member);
         return cart;
+    }
+
+    public void changeCart(Long id){
+        this.id=id;
+    }
+
+    public void changeProduct(Product product){
+        this.product=product;
+    }
+
+    public void changeProductCount(int productCount){
+        this.productCount=productCount;
+    }
+
+
+    // 카트에 담을 상품 생성
+    public static Cart createCartProduct(Cart cart, Product product, int count){
+        Cart cartProduct=new Cart();
+        cartProduct.changeCart(cart.getId());
+        cartProduct.changeProduct(product);
+        cartProduct.changeProductCount(count);
+        return cartProduct;
+    }
+
+    // 기존 상품을 추가로 담을 때
+    public void addCount(int productCount){
+        this.productCount += productCount;
+    }
+
+    // 장바구니 상품 수량 변경
+    public void updateCount(int productCount){
+        this.productCount=productCount;
     }
 
 }

@@ -1,14 +1,14 @@
 package com.ohrray.service;
 
-import com.ohrray.domain.CartProductDTO;
+import com.ohrray.domain.CartDTO;
 
 import java.util.List;
 
 public interface CartService{
 
-    public Long addCart(CartProductDTO cartProductDTO, String email);
+    public Long addCart(CartDTO cartDTO, String email);
 
-    public List<CartProductDTO> cartList();
+    public List<CartDTO> cartList();
 
     public void updateCartProductCount(Long cartProductId, int productCount);
 
