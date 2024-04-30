@@ -12,7 +12,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -85,5 +87,28 @@ public class CartServiceImpl implements CartService{
     @Override
     public void deleteCartProduct(Long cartProductId) {
         cartRepository.deleteById(cartProductId);
+    }
+
+    // 상품별 합계
+    @Transactional
+    @Override
+    public Map<Long, Integer> productTotal(List<CartDTO> cartLists) {
+        Map<Long, Integer> productTotal = new HashMap<>();
+        for(CartDTO cartDTO : cartLists) {
+            int total = cartDTO.getProductPrice() * cartDTO.getCount();
+            productTotal.put(cartDTO.getCartProductId(), total);
+        }
+        return productTotal;
+    }
+
+    // 전체 총계
+    @Transactional
+    @Override
+    public int subTotal(List<CartDTO> cartLists) {
+        int subTotal=0;
+        for(CartDTO cartDTO : cartLists){
+            subTotal+= cartDTO.getCount()* cartDTO.getProductPrice();
+        }
+        return subTotal;
     }
 }

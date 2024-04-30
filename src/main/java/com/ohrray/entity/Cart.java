@@ -5,7 +5,7 @@ import lombok.*;
 
 @Entity
 @Builder
-@Getter
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Cart extends BaseEntity {

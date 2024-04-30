@@ -1,6 +1,7 @@
 package com.ohrray.controller;
 
 import com.ohrray.domain.CartDTO;
+import com.ohrray.repository.CartRepository;
 import com.ohrray.service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +22,8 @@ import java.util.Map;
 public class CartController {
 
     private final CartService cartService;
+    private final CartRepository cartRepository;
+
 
 
     // 장바구니에 상품 담기
@@ -65,17 +67,9 @@ public class CartController {
 //        cartLists.add(new CartProductDTO(3L, "테스트3", 3000, 30, "이미지3"));
 
         // 상품별 총계
-        Map<Long, Integer> productTotal=new HashMap<>();
-        for(CartDTO cartDTO : cartLists){
-            int total= cartDTO.getProductPrice()* cartDTO.getCount();
-            productTotal.put(cartDTO.getCartProductId(), total);
-        }
-
+        Map<Long, Integer> productTotal=cartService.productTotal(cartLists);
         // 전체 총계
-        int subTotal=0;
-        for(CartDTO cartDTO : cartLists){
-            subTotal+= cartDTO.getCount()* cartDTO.getProductPrice();
-        }
+        int subTotal=cartService.subTotal(cartLists);
 
         model.addAttribute("cartLists", cartLists);
         model.addAttribute("productTotal", productTotal);
@@ -105,11 +99,4 @@ public class CartController {
         cartService.deleteCartProduct(cartProductId);
         return new ResponseEntity<Long>(cartProductId, HttpStatus.OK);
     }
-
-//    public String deleteCartProduct(@RequestBody CartProductDTO cartProductDTO){
-//        cartService.deleteCartProduct(cartProductDTO.getCartProductId());
-//        return "redirect: cart/list";
-//    }
-
-
 }

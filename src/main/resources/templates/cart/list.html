@@ -667,7 +667,7 @@
 			let price = tableRow.querySelector(`input[data-id='${productId}']`).getAttribute('data-price');
 			// 쉼표 제거 후 Number로 변환
 			price = Number(price.replace(/,/g, ''));
-			console.log(price, quantity);
+			let total = price*quantity;
 			// 총액을 문자열로 변환하여 업데이트
 			tableRow.querySelector(`.product-total[data-id='${productId}']`).textContent = `₩ ${total.toLocaleString()}`;
 		}
