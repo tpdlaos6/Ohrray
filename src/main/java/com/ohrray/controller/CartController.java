@@ -3,6 +3,7 @@ package com.ohrray.controller;
 import com.ohrray.domain.CartDTO;
 import com.ohrray.repository.CartRepository;
 import com.ohrray.service.CartService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -99,4 +100,19 @@ public class CartController {
         cartService.deleteCartProduct(cartProductId);
         return new ResponseEntity<Long>(cartProductId, HttpStatus.OK);
     }
+
+
+    // 장바구니 옵션 변경 (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중)
+    @PostMapping("/{cartId}/changeCartOptions")
+    public ResponseEntity<?> changeCartOptions(@PathVariable Long cartId, @RequestParam int size, @RequestParam String color) {
+        try {
+            cartService.changeOptions(cartId, size, color);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

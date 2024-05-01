@@ -3,9 +3,11 @@ package com.ohrray.service;
 import com.ohrray.domain.CartDTO;
 import com.ohrray.entity.Cart;
 import com.ohrray.entity.Member;
+import com.ohrray.entity.Options;
 import com.ohrray.entity.Product;
 import com.ohrray.repository.CartRepository;
 import com.ohrray.repository.MemberRepository;
+import com.ohrray.repository.OptionsRepository;
 import com.ohrray.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -25,6 +27,7 @@ public class CartServiceImpl implements CartService{
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
+    private final OptionsRepository optionsRepository;
 
     @Transactional
     @Override
@@ -111,4 +114,39 @@ public class CartServiceImpl implements CartService{
         }
         return subTotal;
     }
+
+
+    // 장바구니 상품 옵션 변경 (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중)
+    @Override
+    @Transactional
+    public void changeOptions(Long cartId, int size, String color) {
+        Cart cart=cartRepository.findById(cartId)
+                .orElseThrow(EntityNotFoundException::new);
+        Options options=optionsRepository.findBySizeAndColor(size, color)
+                .orElseThrow(EntityNotFoundException::new);
+
+        cart.setOptions(options);
+
+    }
+
+
+//    // 장바구니 상품 색상 변경
+//    @Override
+//    @Transactional
+//    public void updateColor(Long cartId, String color) {
+//        Cart cart=cartRepository.findById(cartId)
+//                .orElseThrow(EntityNotFoundException::new);
+//        cart.setColor(color);
+//        cartRepository.save(cart);
+//    }
+//
+//    // 장바구니 상품 사이즈 변경
+//    @Override
+//    @Transactional
+//    public void updateSize(Long cartId, int size) {
+//        Cart cart=cartRepository.findById(cartId)
+//                .orElseThrow(EntityNotFoundException::new);
+//        cart.setProduct()
+//        cartRepository.save(cart);
+//    }
 }

@@ -21,4 +21,8 @@ public interface CartService{
     // 전체 총계
     public int subTotal(List<CartDTO> cartLists);
 
+    // 장바구니 상품 색상, 사이즈 변경
+    public void changeOptions(Long cartId, int size, String color);
+
+
 }

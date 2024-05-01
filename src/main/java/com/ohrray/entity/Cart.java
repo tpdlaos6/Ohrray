@@ -27,9 +27,21 @@ public class Cart extends BaseEntity {
     //상품갯수
     private int productCount;
 
+    // 상품 옵션
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "OPTIONS_ID")
+    private Options options;
+
+
+    public void changeOptions(Options options){
+        this.options=options;
+    }
+
+
     public void changeMember(Member member){
         this.member=member;
     }
+
 
 
     // 장바구니 생성
