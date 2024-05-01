@@ -119,14 +119,8 @@ public class CartServiceImpl implements CartService{
     // 장바구니 상품 옵션 변경 (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중)
     @Override
     @Transactional
-    public void changeOptions(Long cartId, int size, String color) {
-        Cart cart=cartRepository.findById(cartId)
-                .orElseThrow(EntityNotFoundException::new);
-        Options options=optionsRepository.findBySizeAndColor(size, color)
-                .orElseThrow(EntityNotFoundException::new);
-
-        cart.setOptions(options);
-
+    public List<Options> findOptionsByCartIdAndProductId(Long cartId, Long productId) {
+        return optionsRepository.findByCartIdAndProductId(cartId, productId);
     }
 
 

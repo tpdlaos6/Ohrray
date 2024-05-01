@@ -133,12 +133,12 @@
                                                 </div>
                                             </div>
                                             <div>
-                                                <select class="size">
+                                                <select id="size">
 
                                                 </select>
                                             </div>
                                             <div>
-                                                <select class="color">
+                                                <select id="color">
 
                                                 </select>
                                             </div>
@@ -413,6 +413,16 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
                 alert('옵션 변경에 실패?');
             }
         })
+    }
+
+    function fetchAndDisplayOptions(productId) {
+        fetch(`/api/${cartId}/{productId}/options`)
+        .then(response => response.json())
+        .then(options => {
+            const colorSelect = document.getElementById('color');
+            const sizeSelect = document.getElementById('size');
+            // 드롭박스에 옵션들 추가
+        });
     }
 
     // // 색상 변경
