@@ -1,7 +1,6 @@
 package com.ohrray.controller;
 
 import com.ohrray.domain.CartDTO;
-import com.ohrray.entity.Options;
 import com.ohrray.repository.CartRepository;
 import com.ohrray.service.CartService;
 import lombok.RequiredArgsConstructor;
@@ -59,12 +58,6 @@ public class CartController {
 
         List<CartDTO> cartLists=cartService.cartList();
 
-
-//        // 테스트용 더미데이터
-//        cartLists.add(new CartProductDTO(1L, "테스트1", 1000, 5, "이미지1"));
-//        cartLists.add(new CartProductDTO(2L, "테스트2", 3000, 10, "이미지2"));
-//        cartLists.add(new CartProductDTO(3L, "테스트3", 3000, 30, "이미지3"));
-
         // 상품별 총계
         Map<Long, Integer> productTotal=cartService.productTotal(cartLists);
         // 전체 총계
@@ -75,6 +68,7 @@ public class CartController {
         model.addAttribute("subTotal", subTotal);
 
         return "cart/cart";
+
     }
 
 
@@ -101,11 +95,11 @@ public class CartController {
 
 
     // 장바구니 옵션 변경 (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중)
-    @GetMapping("/{cartId}/{productId}/options")
-    public ResponseEntity<List<Options>> getProductOptions(@PathVariable Long cartId, @PathVariable Long productId) {
-        List<Options> options = cartService.findOptionsByCartIdAndProductId(cartId, productId);
-        return ResponseEntity.ok().body(options);
-    }
+//    @GetMapping("/{cartId}/{productId}/options")
+//    public ResponseEntity<List<Options>> getProductOptions(@PathVariable Long cartId, @PathVariable Long productId) {
+//        List<Options> options = cartService.findOptionsByCartIdAndProductId(cartId, productId);
+//        return ResponseEntity.ok().body(options);
+//    }
 
 //    @PostMapping("/{cartId}/changeCartOptions")
 //    public ResponseEntity<?> changeCartOptions(@PathVariable Long cartId, @RequestParam int size, @RequestParam String color) {

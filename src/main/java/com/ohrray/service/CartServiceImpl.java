@@ -1,6 +1,7 @@
 package com.ohrray.service;
 
 import com.ohrray.domain.CartDTO;
+import com.ohrray.domain.OptionDTO;
 import com.ohrray.entity.Cart;
 import com.ohrray.entity.Member;
 import com.ohrray.entity.Options;
@@ -14,10 +15,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -65,14 +63,20 @@ public class CartServiceImpl implements CartService{
     public List<CartDTO> cartList() {
         List<CartDTO> list = cartRepository.findAll()
                 .stream()
-                .map(cart ->
-                        CartDTO.builder()
-                                .cartProductId(cart.getProduct().getId())
-                                .productName(cart.getProduct().getProductName())
-                                .productPrice(cart.getProduct().getProductPrice())
-                                .count(cart.getProductCount())
-                                .build()
-                        )
+                .map(cart ->{
+
+                    OptionDTO option = new OptionDTO();
+                    option.setColor(cart.getOptions().getColor());
+                    option.setSize(cart.getOptions().getSize());
+
+                    return CartDTO.builder()
+                            .cartProductId(cart.getProduct().getId())
+                            .productName(cart.getProduct().getProductName())
+                            .productPrice(cart.getProduct().getProductPrice())
+                            .count(cart.getProductCount())
+                            .option(option)
+                            .build();
+                })
                 .collect(Collectors.toList());
         return list;
     }
@@ -120,27 +124,15 @@ public class CartServiceImpl implements CartService{
     @Override
     @Transactional
     public List<Options> findOptionsByCartIdAndProductId(Long cartId, Long productId) {
-        return optionsRepository.findByCartIdAndProductId(cartId, productId);
+        // 우선, 장바구니 ID를 통해서 장바구니 엔티티 조회
+        Cart cart = cartRepository.findById(cartId).orElseThrow(
+                () -> new NoSuchElementException("해당 ID의 장바구니가 없음"));
+
+        // 장바구니와 연관된 상품이 입력된 상품 ID와 일치하는 경우, 해당 상품의 옵션들을 조회
+        if (cart.getProduct().getId().equals(productId)) {
+            return optionsRepository.findByProductId(productId);
+        } else {
+            throw new IllegalStateException("상품이 장바구니에 없음");
+        }
     }
-
-
-//    // 장바구니 상품 색상 변경
-//    @Override
-//    @Transactional
-//    public void updateColor(Long cartId, String color) {
-//        Cart cart=cartRepository.findById(cartId)
-//                .orElseThrow(EntityNotFoundException::new);
-//        cart.setColor(color);
-//        cartRepository.save(cart);
-//    }
-//
-//    // 장바구니 상품 사이즈 변경
-//    @Override
-//    @Transactional
-//    public void updateSize(Long cartId, int size) {
-//        Cart cart=cartRepository.findById(cartId)
-//                .orElseThrow(EntityNotFoundException::new);
-//        cart.setProduct()
-//        cartRepository.save(cart);
-//    }
 }
