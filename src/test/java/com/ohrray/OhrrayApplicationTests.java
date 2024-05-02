@@ -14,6 +14,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 class OhrrayApplicationTests {
@@ -25,33 +28,39 @@ class OhrrayApplicationTests {
 
 	@Autowired private MockMvc mockMvc;
 
-	public Product saveProduct(){
-		Product product=new Product();
+//	public Product saveProduct(){
+//		List<Member> members=new ArrayList<>();
+//
+//		for(int i=1;i<10;i++){
+//			Product product=new Product();
+//			product.setId((long)i);
+//			product.setProductName(i+"만원짜리 상품");
+//			product.setProductPrice(i*10000);
+//			product.setMember(members.get(i));
+//		}
+//
+//		return productRepository.save(product);
+//	}
 
-		product.setProductName("상품이름");
-		product.setProductPrice(10000);
-		product.setReadCount(5);
 
-		return productRepository.save(product);
-	}
 
-	@Test
-	public void saveMember(){
-
-		for(int i=21;i<=30;i++){
-		Member member=new Member();
-		member.setEmail("test"+i+"@test.com");
-		memberRepository.save(member);
+	public void saveMember() {
+		List<Member> members = new ArrayList<>();
+		for(int i=1; i<=10; i++) {
+			Member member = new Member();
+			member.setEmail("test" + i + "@test.com");
+			members.add(memberRepository.save(member));
 		}
 	}
 
-
+	@Test
 	public void saveCart(){
+		List<Member> members=new ArrayList<>();
 
-		for(int i=21;i<=30;i++){
+		for(int i=1;i<=10;i++){
 			Cart cart=new Cart();
 			cart.setProductCount(1);
-			cart.setId((long) i);
+			cart.setMember(members.get(i));
 			cartRepository.save(cart);
 		}
 	}
