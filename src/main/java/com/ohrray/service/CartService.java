@@ -1,7 +1,6 @@
 package com.ohrray.service;
 
 import com.ohrray.domain.CartDTO;
-import com.ohrray.entity.Options;
 
 import java.util.List;
 import java.util.Map;
@@ -21,8 +20,5 @@ public interface CartService{
 
     // 전체 총계
     public int subTotal(List<CartDTO> cartLists);
-
-    // 장바구니 상품 색상, 사이즈 변경
-    List<Options> findOptionsByCartIdAndProductId(Long cartId, Long productId);
 
 }

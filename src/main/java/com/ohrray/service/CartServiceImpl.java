@@ -65,21 +65,24 @@ public class CartServiceImpl implements CartService{
                 .stream()
                 .map(cart ->{
 
-                    OptionDTO option = new OptionDTO();
-                    option.setColor(cart.getOptions().getColor());
-                    option.setSize(cart.getOptions().getSize());
+                    List<Options> optionsList=optionsRepository.findByProductId(cart.getProduct().getId());
+
+                    List<OptionDTO> optionDTOs = optionsList.stream()
+                            .map(option -> new OptionDTO(option.getColor(), option.getSize()))
+                            .collect(Collectors.toList());
 
                     return CartDTO.builder()
                             .cartProductId(cart.getProduct().getId())
                             .productName(cart.getProduct().getProductName())
                             .productPrice(cart.getProduct().getProductPrice())
                             .count(cart.getProductCount())
-                            .option(option)
+                            .option(optionDTOs)
                             .build();
                 })
                 .collect(Collectors.toList());
         return list;
     }
+
 
     // 장바구니 상품 수량 수정
     @Transactional
@@ -90,6 +93,7 @@ public class CartServiceImpl implements CartService{
         cart.updateCount(productCount);
     }
 
+    // 장바구니 상품 삭제
     @Transactional
     @Override
     public void deleteCartProduct(Long cartProductId) {
@@ -120,19 +124,19 @@ public class CartServiceImpl implements CartService{
     }
 
 
-    // 장바구니 상품 옵션 변경 (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중)
-    @Override
-    @Transactional
-    public List<Options> findOptionsByCartIdAndProductId(Long cartId, Long productId) {
-        // 우선, 장바구니 ID를 통해서 장바구니 엔티티 조회
-        Cart cart = cartRepository.findById(cartId).orElseThrow(
-                () -> new NoSuchElementException("해당 ID의 장바구니가 없음"));
-
-        // 장바구니와 연관된 상품이 입력된 상품 ID와 일치하는 경우, 해당 상품의 옵션들을 조회
-        if (cart.getProduct().getId().equals(productId)) {
-            return optionsRepository.findByProductId(productId);
-        } else {
-            throw new IllegalStateException("상품이 장바구니에 없음");
-        }
-    }
+//    // 장바구니 상품 옵션 변경 (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중)
+//    @Override
+//    @Transactional
+//    public List<Options> findOptionsByCartIdAndProductId(Long cartId, Long productId) {
+//        // 우선, 장바구니 ID를 통해서 장바구니 엔티티 조회
+//        Cart cart = cartRepository.findById(cartId).orElseThrow(
+//                () -> new NoSuchElementException("해당 ID의 장바구니가 없음"));
+//
+//        // 장바구니와 연관된 상품이 입력된 상품 ID와 일치하는 경우, 해당 상품의 옵션들을 조회
+//        if (cart.getProduct().getId().equals(productId)) {
+//            return optionsRepository.findByProductId(productId);
+//        } else {
+//            throw new IllegalStateException("상품이 장바구니에 없음");
+//        }
+//    }
 }

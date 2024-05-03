@@ -2,6 +2,7 @@ package com.ohrray.controller;
 
 import com.ohrray.domain.CartDTO;
 import com.ohrray.repository.CartRepository;
+import com.ohrray.repository.OptionsRepository;
 import com.ohrray.service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ public class CartController {
 
     private final CartService cartService;
     private final CartRepository cartRepository;
+    private final OptionsRepository optionsRepository;
 
     // 장바구니에 상품 담기
     @PostMapping(value = "/add")
@@ -93,6 +95,19 @@ public class CartController {
         return new ResponseEntity<Long>(cartProductId, HttpStatus.OK);
     }
 
+    // 상품 사이즈 정보 요청 처리
+    @GetMapping("/api/products/{productId}/sizes")
+    public ResponseEntity<List<Integer>> getProductSizes(@PathVariable("productId") Long productId) {
+        List<Integer> sizes = optionsRepository.findSizesByProductId(productId);
+        return ResponseEntity.ok(sizes);
+    }
+
+    // 상품 색상 정보 요청 처리
+    @GetMapping("/api/products/{productId}/colors")
+    public ResponseEntity<List<String>> getProductColors(@PathVariable("productId") Long productId) {
+        List<String> colors = optionsRepository.findColorsByProductId(productId);
+        return ResponseEntity.ok(colors);
+    }
 
     // 장바구니 옵션 변경 (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중)
 //    @GetMapping("/{cartId}/{productId}/options")

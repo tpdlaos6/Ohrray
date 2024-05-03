@@ -117,36 +117,34 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="table_row" th:each="cartLists : ${cartLists}">
-                                        <td class="column-1" th:text="${cartLists.mainImg}"></td>
-                                        <td class="column-2" th:text="${cartLists.productName}"></td>
+                                    <tr class="table_row" th:each="cartList : ${cartLists}">
+                                        <td class="column-1" th:text="${cartList.mainImg}"></td>
+                                        <td class="column-2" th:text="${cartList.productName}"></td>
                                         <td class="column-3">
                                             <div class="qty-btn d-flex">
                                                 <div class="wrap-num-product flex-w m-l-auto m-r-0">
-                                                    <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m" data-id="${cartLists.cartProductId}">
+                                                    <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m" data-id="${cartList.cartProductId}">
                                                         <i class="fs-16 zmdi zmdi-minus"></i>
                                                     </div>
-                                                    <input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product1" th:value="${cartLists.count}" th:data-price="${cartLists.productPrice}" data-id="${cartLists.cartProductId}">
-                                                    <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m" data-id="${cartLists.cartProductId}">
+                                                    <input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product1" th:value="${cartList.count}" th:data-price="${cartList.productPrice}" data-id="${cartList.cartProductId}">
+                                                    <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m" data-id="${cartList.cartProductId}">
                                                         <i class="fs-16 zmdi zmdi-plus"></i>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div>
-                                                <select class="size" th:attr="data-id=${cartLists.cartProductId}">
-                                                    <option th:each="size : ${cartLists.option.size}" th:value="${size}" th:text="${size}"></option>
+                                                <select class="size" th:attr="data-id=${cartList.cartProductId}">
+                                                    <option th:each="option : ${cartList.option}" th:text="${option.size}"></option>
                                                 </select>
-                                            </div>
-                                            <div>
-                                                <select class="color" th:attr="data-id=${cartLists.cartProductId}">
-                                                    <option th:each="color : ${cartLists.option.color}" th:value="${color}" th:text="${color}"></option>
+                                                <select class="color" th:attr="data-id=${cartList.cartProductId}">
+                                                    <option th:each="option : ${cartList.option}" th:text="${option.color}"></option>
                                                 </select>
                                             </div>
                                         </td>
-                                        <td class="column-4 product-total" data-id="${cartLists.cartProductId}" th:text="${'₩ '+#numbers.formatDecimal(productTotal[cartLists.cartProductId], 0, 'COMMA', 0, 'POINT')}"></td>
+                                        <td class="column-4 product-total" data-id="${cartList.cartProductId}" th:text="${'₩ '+#numbers.formatDecimal(productTotal[cartList.cartProductId], 0, 'COMMA', 0, 'POINT')}"></td>
                                         <td class="column-5">
-                                            <button type="button" class="close" aria-label="Close">
-                                                <span aria-hidden="true" th:data-id="${cartLists.cartProductId}" onclick="deleteCartProduct(this)">&times;</span>
+                                            <button type="button" class="close" aria-label="Close" th:data-id="${cartList.cartProductId}" id="deleteCartButton">
+                                                <span aria-hidden="true">&times;</span>
                                             </button>
                                         </td>
                                     </tr>
@@ -275,107 +273,116 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 
 <script>
     document.addEventListener("DOMContentLoaded", function(event) {
-        updateShippingAndTotal();
-    });
-
-    function updateShippingAndTotal() {
-
-        var subTotalText = document.querySelector('.subtotal').innerText
-        var subTotal = parseInt(subTotalText.replace(/[^0-9]/g, '')); // 정규식표현이라 함..;; 이모티콘인줄
-
-        var shippingFeeElement = document.querySelector('.shippingFee');
-        var finalAmountElement = document.querySelector('.finalFee');
-
-        if(subTotal >= 300000) {
-            // 배송료가 무료인 경우
-            shippingFeeElement.innerText = 'Free';
-            finalAmountElement.innerText = '₩ ' + subTotal.toLocaleString();
-        } else {
-            // 배송료가 5,000원 부과되는 경우
-            var shippingFee = 5000;
-            var finalAmount = subTotal + shippingFee;
-            shippingFeeElement.innerText = '₩ ' + shippingFee.toLocaleString();
-            finalAmountElement.innerText = '₩ ' + finalAmount.toLocaleString();
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        // 수량 감소 버튼 이벤트 리스너
-        document.querySelectorAll('.btn-num-product-down').forEach(function(button) {
-            button.addEventListener('click', function() {
-                console.log("감소버튼 누름요")
-                const productId = this.getAttribute('data-id');
-                const tableRow = this.closest('.table_row'); // 가장 가까운 .table_row를 찾음
-                const inputField = tableRow.querySelector(`input[data-id='${productId}']`); // 해당 .table_row 내에서 input 필드를 찾음
-                let quantity = parseInt(inputField.value, 10);
-                if (quantity > 1) {
-                    // quantity 값을 직접 감소시킨 후 input 필드의 값을 업데이트
-                    quantity -= 1;
-                    inputField.value = quantity;
-                    updateTotal(productId, quantity, tableRow); // tableRow를 updateTotal 함수에 전달
-                    updateSubtotal();
-                }
-            });
+        // updateShippingAndTotal();
+        // changeQuantity();
+        var deleteButton = document.getElementById('deleteCartButton');
+        deleteButton.addEventListener('click', function(event) {
+            deleteCartProduct(this, event);
         });
 
-        // 수량 증가 버튼 이벤트 리스너
-        document.querySelectorAll('.btn-num-product-up').forEach(function(button) {
-            button.addEventListener('click', function() {
-                console.log("증가버튼 누름요")
-                const productId = this.getAttribute('data-id');
-                const tableRow = this.closest('.table_row'); // 가장 가까운 .table_row를 찾음
-                const inputField = tableRow.querySelector(`input[data-id='${productId}']`); // 해당 .table_row 내에서 input 필드를 찾음
-                let quantity = parseInt(inputField.value, 10);
-                // quantity 값을 직접 증가시킨 후 input 필드의 값을 업데이트
-                quantity += 1;
-                inputField.value = quantity;
-                updateTotal(productId, quantity, tableRow); // tableRow를 updateTotal 함수에 전달
-                updateSubtotal();
-            });
-        });
-
-
-        // 상품별 총액 업데이트 함수
-        function updateTotal(productId, quantity, tableRow) {
-            let price = tableRow.querySelector(`input[data-id='${productId}']`).getAttribute('data-price');
-            // 쉼표 제거 후 Number로 변환
-            price = Number(price.replace(/,/g, ''));
-            let total=price*quantity;
-            // 총액을 문자열로 변환하여 업데이트
-            tableRow.querySelector(`.product-total[data-id='${productId}']`).textContent = `₩ ${total.toLocaleString()}`;
-        }
-
-        // 장바구니 총액 업데이트 함수
-        function updateSubtotal() {
-            let subtotal = 0;
-            // 모든 .product-total 요소를 순회
-            document.querySelectorAll('.product-total').forEach(function(item) {
-                // 쉼표를 제거하고 숫자로 변환
-                let itemTotal = parseInt(item.textContent.replace(/₩ /g, '').replace(/,/g, ''), 10);
-                subtotal += itemTotal;
-            });
-            // subtotal 업데이트
-            document.querySelectorAll('.subtotal').forEach(function (item){
-                item.textContent=`₩ ${subtotal.toLocaleString()}`;
-            })
-
-            // 배송비 업데이트
-            updateShippingFee(subtotal);
-        }
-
-        function updateShippingFee(subtotal){
-            let shippingFee=subtotal>=300000?0:5000; // 배송비 10만원 이상 무료. 아니면 5천원이용
-            document.querySelector('.shippingFee').textContent = `₩ ${shippingFee.toLocaleString()}`;
-
-            let finalFee = subtotal + shippingFee; // 최종 금액 (부가세 포함 계산 필요시 여기에 추가)
-            document.querySelector('.finalFee').textContent = `₩ ${finalFee.toLocaleString()}`; // 최종 금액 업데이트
-        }
     });
+    //
+    // function updateShippingAndTotal() {
+    //
+    //     var subTotalText = document.querySelector('.subtotal').innerText
+    //     var subTotal = parseInt(subTotalText.replace(/[^0-9]/g, '')); // 정규식표현이라 함..;; 이모티콘인줄
+    //
+    //     var shippingFeeElement = document.querySelector('.shippingFee');
+    //     var finalAmountElement = document.querySelector('.finalFee');
+    //
+    //     if(subTotal >= 300000) {
+    //         // 배송료가 무료인 경우
+    //         shippingFeeElement.innerText = 'Free';
+    //         finalAmountElement.innerText = '₩ ' + subTotal.toLocaleString();
+    //     } else {
+    //         // 배송료가 5,000원 부과되는 경우
+    //         var shippingFee = 5000;
+    //         var finalAmount = subTotal + shippingFee;
+    //         shippingFeeElement.innerText = '₩ ' + shippingFee.toLocaleString();
+    //         finalAmountElement.innerText = '₩ ' + finalAmount.toLocaleString();
+    //     }
+    // }
+    //
+    // function changeQuantity(){
+    //     // 수량 감소 버튼 이벤트 리스너
+    //     document.querySelectorAll('.btn-num-product-down').forEach(function(button) {
+    //         button.addEventListener('click', function() {
+    //             console.log("감소버튼 누름요")
+    //             const productId = this.getAttribute('data-id');
+    //             const tableRow = this.closest('.table_row'); // 가장 가까운 .table_row를 찾음
+    //             const inputField = tableRow.querySelector(`input[data-id='${productId}']`); // 해당 .table_row 내에서 input 필드를 찾음
+    //             let quantity = parseInt(inputField.value, 10);
+    //             if (quantity > 1) {
+    //                 // quantity 값을 직접 감소시킨 후 input 필드의 값을 업데이트
+    //                 quantity -= 1;
+    //                 inputField.value = quantity;
+    //                 updateTotal(productId, quantity, tableRow); // tableRow를 updateTotal 함수에 전달
+    //                 updateSubtotal();
+    //             }
+    //         });
+    //     });
+    //
+    //     // 수량 증가 버튼 이벤트 리스너
+    //     document.querySelectorAll('.btn-num-product-up').forEach(function(button) {
+    //         button.addEventListener('click', function() {
+    //             console.log("증가버튼 누름요")
+    //             const productId = this.getAttribute('data-id');
+    //             const tableRow = this.closest('.table_row'); // 가장 가까운 .table_row를 찾음
+    //             const inputField = tableRow.querySelector(`input[data-id='${productId}']`); // 해당 .table_row 내에서 input 필드를 찾음
+    //             let quantity = parseInt(inputField.value, 10);
+    //             // quantity 값을 직접 증가시킨 후 input 필드의 값을 업데이트
+    //             quantity += 1;
+    //             inputField.value = quantity;
+    //             updateTotal(productId, quantity, tableRow); // tableRow를 updateTotal 함수에 전달
+    //             updateSubtotal();
+    //         });
+    //     });
+    // }
+    //
+    //
+    // // 상품별 총액 업데이트 함수
+    // function updateTotal(productId, quantity, tableRow) {
+    //     let price = tableRow.querySelector(`input[data-id='${productId}']`).getAttribute('data-price');
+    //     // 쉼표 제거 후 Number로 변환
+    //     price = Number(price.replace(/,/g, ''));
+    //     let total=price*quantity;
+    //     // 총액을 문자열로 변환하여 업데이트
+    //     tableRow.querySelector(`.product-total[data-id='${productId}']`).textContent = `₩ ${total.toLocaleString()}`;
+    // }
+    //
+    // // 장바구니 총액 업데이트 함수
+    // function updateSubtotal() {
+    //     let subtotal = 0;
+    //     // 모든 .product-total 요소를 순회
+    //     document.querySelectorAll('.product-total').forEach(function(item) {
+    //         // 쉼표를 제거하고 숫자로 변환
+    //         let itemTotal = parseInt(item.textContent.replace(/₩ /g, '').replace(/,/g, ''), 10);
+    //         subtotal += itemTotal;
+    //     });
+    //     // subtotal 업데이트
+    //     document.querySelectorAll('.subtotal').forEach(function (item){
+    //         item.textContent=`₩ ${subtotal.toLocaleString()}`;
+    //     })
+    //
+    //     // 배송비 업데이트
+    //     updateShippingFee(subtotal);
+    // }
+    //
+    // function updateShippingFee(subtotal){
+    //     let shippingFee=subtotal>=300000?0:5000; // 배송비 10만원 이상 무료. 아니면 5천원이용
+    //     document.querySelector('.shippingFee').textContent = `₩ ${shippingFee.toLocaleString()}`;
+    //
+    //     let finalFee = subtotal + shippingFee; // 최종 금액 (부가세 포함 계산 필요시 여기에 추가)
+    //     document.querySelector('.finalFee').textContent = `₩ ${finalFee.toLocaleString()}`; // 최종 금액 업데이트
+    // }
+    //
 
     // 장바구니 상품 개별삭제
-    function deleteCartProduct(element){
+    function deleteCartProduct(element, event){
+        event.preventDefault(); // 이 부분을 추가
+        event.stopPropagation();
         var cartProductId = element.getAttribute('data-id'); // data-id 속성을 읽어옵니다.
-        console.log(cartProductId);
+        console.log("나 보임??나 보임??나 보임??나 보임??나 보임??나 보임??나 보임??나 보임??나 보임??나 보임??나 보임??")
         var url = "/cart/cartProduct/"+cartProductId; // URL 동적 생성
 
         $.ajax({
@@ -394,141 +401,43 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
         });
     }
 
-    //
-    $(document).ready(function(){
-        // 상품 사이즈 변경 시
-        $('tbody').on('change', '.size', function(){
-            var productId = $(this).attr('data-id');
-            $.ajax({
-                url: "/api/products/" + productId + "/sizes",
-                type: "GET",
-                success: function(response){
-                    var sizeSelect = $('select.size[data-id="' + productId + '"]');
-                    sizeSelect.empty();
-                    $.each(response, function(index, size){
-                        sizeSelect.append($('<option>', {
-                            value: size,
-                            text: size
-                        }));
-                    });
-                }
-            });
-        });
 
-        // 상품 색상 변경 시
-        $('tbody').on('change', '.color', function(){
-            var productId = $(this).attr('data-id');
-            $.ajax({
-                url: "/api/products/" + productId + "/colors",
-                type: "GET",
-                success: function(response){
-                    var colorSelect = $('select.color[data-id="' + productId + '"]');
-                    colorSelect.empty();
-                    $.each(response, function(index, color){
-                        colorSelect.append($('<option>', {
-                            value: color,
-                            text: color
-                        }));
-                    });
-                }
-            });
-        });
-    });
-
-
-    //  (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중) (수정 중)
-    // function changeCartOptions(){
-    //     var selectSize=$(".size").val();
-    //     var selectColor=$(".color").val();
-    //
-    //     $.ajax({
-    //         url: '/cart/{cartId}/{productId}/options',
-    //         type: 'post',
-    //         data: {
-    //             size: selectSize,
-    //             color: selectColor
-    //         },
-    //         success: function() {
-    //             alert('옵션이 변경 완료?');
-    //         },
-    //         error: function() {
-    //             alert('옵션 변경에 실패?');
-    //         }
-    //     })
-    // }
-
-    // function fetchAndDisplayOptions(cartId, productId) {
-    //     // 서버로부터 옵션 데이터를 가져오는 fetch 호출
-    //     fetch(`/${cartId}/${productId}/options`)
-    //         .then(response => response.json())
-    //         .then(options => {
-    //             const colorSelect = document.getElementById('color');
-    //             const sizeSelect = document.getElementById('size');
-    //
-    //             // 기존의 셀렉트 옵션 제거
-    //             colorSelect.innerHTML = '';
-    //             sizeSelect.innerHTML = '';
-    //
-    //             // 새로운 옵션으로 셀렉트 옵션 업데이트
-    //             options.forEach(option => {
-    //                 console.log("====================================================")
-    //                 console.log("눌리냐???????")
-    //                 console.log("====================================================")
-    //                 // 여기서는 option 객체가 color와 size 속성을 가졌다고 가정합니다.
-    //                 const colorOption = document.createElement('option');
-    //                 colorOption.value = option.color;
-    //                 colorOption.innerText = option.color;
-    //                 colorSelect.appendChild(colorOption);
-    //
-    //                 const sizeOption = document.createElement('option');
-    //                 sizeOption.value = option.size;
-    //                 sizeOption.innerText = option.size;
-    //                 sizeSelect.appendChild(sizeOption);
-    //             });
-    //         });
-    // }
-
-    // // 색상 변경
-    // $(document).ready(function () {
-    //     $(".color").change(function () {
-    //         var selectColor = $(this).val(); // 선택된 color 값
-    //         var productId = $(this).closest('.table_row').data('id'); // 상품 ID
-    //
+    // //
+    // $(document).ready(function(){
+    //     // 상품 사이즈 변경 시
+    //     $('tbody').on('change', '.size', function(){
+    //         var productId = $(this).attr('data-id');
     //         $.ajax({
-    //             url: '/updateProductColor',
-    //             type: 'PATCH',
-    //             data: {
-    //                 color: selectColor,
-    //                 productId: productId
-    //             },
-    //             success: function (response) {
-    //                 alert('상품의 색상이 성공적으로 변경되었습니다.');
-    //             },
-    //             error: function (error) {
-    //                 alert('오류가 발생했습니다. 다시 시도해 주세요.');
+    //             url: "/cart/api/products/" + productId + "/sizes",
+    //             type: "GET",
+    //             success: function(response){
+    //                 var sizeSelect = $('select.size[data-id="' + productId + '"]');
+    //                 sizeSelect.empty();
+    //                 $.each(response, function(index, size){
+    //                     sizeSelect.append($('<option>', {
+    //                         value: size,
+    //                         text: size
+    //                     }));
+    //                 });
     //             }
     //         });
     //     });
-    // });
     //
-    // // 사이즈 변경
-    // $(document).ready(function () {
-    //     $(".size").change(function () {
-    //         var selectsize = $(this).val(); // 선택된 size 값
-    //         var productId = $(this).closest('.table_row').data('id'); // 상품 ID
-    //
+    //     // 상품 색상 변경 시
+    //     $('tbody').on('change', '.color', function(){
+    //         var productId = $(this).attr('data-id');
     //         $.ajax({
-    //             url: '/updateProductSize',
-    //             type: 'PATCH',
-    //             data: {
-    //                 size: selectsize,
-    //                 productId: productId
-    //             },
-    //             success: function (response) {
-    //                 alert('상품의 사이즈가 성공적으로 변경되었습니다.');
-    //             },
-    //             error: function (error) {
-    //                 alert('오류가 발생했습니다. 다시 시도해 주세요.');
+    //             url: "/cart/api/products/" + productId + "/colors",
+    //             type: "GET",
+    //             success: function(response){
+    //                 var colorSelect = $('select.color[data-id="' + productId + '"]');
+    //                 colorSelect.empty();
+    //                 $.each(response, function(index, color){
+    //                     colorSelect.append($('<option>', {
+    //                         value: color,
+    //                         text: color
+    //                     }));
+    //                 });
     //             }
     //         });
     //     });
