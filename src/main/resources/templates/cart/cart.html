@@ -109,6 +109,7 @@
                             <table class="table table-responsive">
                                 <thead>
                                     <tr class="table_head">
+                                        <th class="column-0"></th>
                                         <th class="column-1">(이미지 컬럼 자리)</th>
                                         <th class="column-2">이름</th>
                                         <th class="column-3">수량</th>
@@ -118,6 +119,9 @@
                                 </thead>
                                 <tbody>
                                     <tr class="table_row" th:each="cartList : ${cartLists}">
+                                        <td>
+                                            <input type="checkbox" class="checkbox" data-id="${cartList.cartProductId}">
+                                        </td>
                                         <td class="column-1" th:text="${cartList.mainImg}"></td>
                                         <td class="column-2" th:text="${cartList.productName}"></td>
                                         <td class="column-3">
@@ -281,6 +285,22 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
         });
 
     });
+
+    $(document).ready(function() {
+    // 체크박스 클릭 이벤트
+    $(".checkbox").click(function() {
+        var total = 0; // 초기 소계 설정
+        // 체크된 모든 체크박스 순회
+        $(".checkbox:checked").each(function() {
+            var id = $(this).data("id"); // 체크된 항목의 id 가져오기
+            var productTotal = parseFloat($(`.product-total[data-id='${id}']`).text().replace('₩ ', '').replace(',', '')); // 상품별 합계 가져오기
+            total += productTotal; // 소계에 더하기
+        });
+        // 소계 업데이트
+        $(".subtotal").text('₩ ' + total.toLocaleString());
+    });
+});
+
     //
     // function updateShippingAndTotal() {
     //
