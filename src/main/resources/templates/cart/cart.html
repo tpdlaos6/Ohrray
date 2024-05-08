@@ -285,6 +285,22 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
         });
 
     });
+
+    $(document).ready(function() {
+    // 체크박스 클릭 이벤트
+    $(".checkbox").click(function() {
+        var total = 0; // 초기 소계 설정
+        // 체크된 모든 체크박스 순회
+        $(".checkbox:checked").each(function() {
+            var id = $(this).data("id"); // 체크된 항목의 id 가져오기
+            var productTotal = parseFloat($(`.product-total[data-id='${id}']`).text().replace('₩ ', '').replace(',', '')); // 상품별 합계 가져오기
+            total += productTotal; // 소계에 더하기
+        });
+        // 소계 업데이트
+        $(".subtotal").text('₩ ' + total.toLocaleString());
+    });
+});
+
     //
     // function updateShippingAndTotal() {
     //
