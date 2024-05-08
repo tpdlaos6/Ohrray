@@ -2,7 +2,6 @@ package com.ohrray;
 
 import com.ohrray.entity.Cart;
 import com.ohrray.entity.Member;
-import com.ohrray.entity.Product;
 import com.ohrray.repository.CartRepository;
 import com.ohrray.repository.LoginRepository;
 import com.ohrray.repository.MemberRepository;
@@ -61,6 +60,7 @@ class OhrrayApplicationTests {
 			Cart cart=new Cart();
 			cart.setProductCount(1);
 			cart.setMember(members.get(i));
+//			cart.setMember(members.get(i));
 			cartRepository.save(cart);
 		}
 	}

@@ -109,6 +109,7 @@
                             <table class="table table-responsive">
                                 <thead>
                                     <tr class="table_head">
+                                        <th class="column-0"></th>
                                         <th class="column-1">(이미지 컬럼 자리)</th>
                                         <th class="column-2">이름</th>
                                         <th class="column-3">수량</th>
@@ -118,6 +119,9 @@
                                 </thead>
                                 <tbody>
                                     <tr class="table_row" th:each="cartList : ${cartLists}">
+                                        <td>
+                                            <input type="checkbox" class="checkbox" data-id="${cartList.cartProductId}">
+                                        </td>
                                         <td class="column-1" th:text="${cartList.mainImg}"></td>
                                         <td class="column-2" th:text="${cartList.productName}"></td>
                                         <td class="column-3">
