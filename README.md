@@ -3,7 +3,7 @@
 <br><br>
 
 ## 🛠 Tools
-![java](https://img.shields.io/badge/java-007396?style=for-the-badge&logo=OpenJDK&logoColor=white)
+![Java](https://img.shields.io/badge/java-%23ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
 ![springboot](https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
 ![springSecurity](https://img.shields.io/badge/springSecurity-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
 <br>
