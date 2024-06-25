@@ -119,6 +119,5 @@
             }
         });
     });
-    //getList();
-    getListReview();
+
 })(jQuery);

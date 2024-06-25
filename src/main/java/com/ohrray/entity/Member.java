@@ -15,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 //@SQLDelete(sql = "UPDATE MEMBER SET deleted_at = current_timestamp WHERE id = ?")
 //@Where(clause = "deleted_at is null")
-public class Member extends BaseEntity{
+public class Member {
     //pk로 자동 1씩 증가 되는 수 설정.
     @Id @GeneratedValue
     @Column(name = "MEMBER_ID")

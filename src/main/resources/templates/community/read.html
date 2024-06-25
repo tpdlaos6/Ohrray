@@ -178,9 +178,9 @@
 
     </style>
     <Script>
-        $(document).ready(function(e){
+        window.onload = function() {
             getList();
-        });
+        };
     </Script>
 
 </head>
@@ -303,11 +303,14 @@
                             </a>
                             <div style="display: flex; justify-content: end;">
                                 <a th:href="@{/community/update(bid=${result.bid})}" style="text-decoration: none;">
-                                    <button class="btn-serach" >수정</button>
+                                    <button th:if="${member.id}==${result.mid}" class="btn-serach" >수정</button>
+
                                 </a>
                                 <form th:action="@{/community/delete}" th:method="delete" style="margin: 0; padding: 0;">
-                                    <button class="btn-serach" type="submit" >삭제</button>
+                                    <button th:if="${member.id}==${result.mid}" class="btn-serach" type="submit" >삭제</button>
                                     <input type="hidden" name="bid" th:value="${result.bid}">
+                                    <input type="hidden" id="mid" th:value="${result.mid}">
+                                    <input type="hidden" id="mem" th:value="${member.id}">
                                 </form>
                             </div>
                         </div>

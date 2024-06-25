@@ -5,20 +5,23 @@ function getList(){
     var bid = document.querySelector(".bid").value;
     console.log(bid);
     $.ajax({
-            url: "/reply/community/getList", // 요청 URL
-            type: "get", // HTTP 메서드(전송방식)
-            data: { // 매개변수로 전달할 데이터
-                bid : bid // 부모글번호
-
-            },
-            dataType: "json", // 응답 데이터 형식
-            success: sucFuncJson1, // 요청 성공 시 호출할 메서드 설정
-            error: errFunc1 // 요청 실패 시 호출할 메서드 설정
-        });
+        url: "/reply/community/getList", // 요청 URL
+        type: "get", // HTTP 메서드(전송방식)
+        data: { // 매개변수로 전달할 데이터
+            bid : bid // 부모글번호
+        },
+        dataType: "json", // 응답 데이터 형식
+        success: sucFuncJson1, // 요청 성공 시 호출할 메서드 설정
+        error: errFunc1 // 요청 실패 시 호출할 메서드 설정
+    });
 }
 
 function sucFuncJson1(result) {
     var str = "";
+    var midValue = document.getElementById('mid').value;
+    var memValue = document.getElementById('mem').value;
+    console.log(midValue);
+    console.log(memValue);
 
     // 날짜 형식을 yyyy-mm-dd hh:mm으로 변환하는 함수
     function formatDate(dateString) {
@@ -32,17 +35,20 @@ function sucFuncJson1(result) {
     }
 
     result.forEach(function(list, index) {
+        var memid = list.mid;
         console.log(list.regDate);
         // 날짜 형식을 변환
         var formattedDate = formatDate(list.regDate);
-            str +="<li class='left clearfix' data-rno='"+list.id+"'>";
-            str +="  <div><div class='header'><strong class='primary-font'>["
-                +list.id+"] "+list.member.nickName+"</strong>";
-            str +="    <small class='pull-right text-muted'>"
-                +formattedDate+"</small></div>";
-            str +="    <p>"+list.content+"</p></div>"
+        str +="<li class='left clearfix' data-rno='"+list.id+"'>";
+        str +="  <div><div class='header'><strong class='primary-font'>["
+            +list.id+"] "+list.mid+"</strong>";
+        str +="    <small class='pull-right text-muted'>"
+            +formattedDate+"</small></div>";
+        str +="    <p>"+list.content+"</p></div>";
+        if(memValue == memid){
             str +=" <button class='deleteReply float-right btn btn-outline-secondary' type='button'>댓글삭제</button>  "
-             str +=  "<button class='updateReply float-right btn btn-outline-secondary' type='button'>댓글수정</button></li><hr/>";
+            str +=  "<button class='updateReply float-right btn btn-outline-secondary' type='button'>댓글수정</button></li><hr/>";
+        }
     });
     $(".chat").html(str);
 }
@@ -150,6 +156,7 @@ $(".chat").on("click", ".deleteReply", function(e) {
 
 // 검색 성공 시 결과를 화면에 뿌려줍니다.
 function sucFuncJson3(result) {
+   location.reload();
     getList();
 }
 function errFunc3(e) {

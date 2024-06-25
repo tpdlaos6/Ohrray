@@ -16,7 +16,7 @@ public interface CommunityService {
     //산 id로 커뮤니티 및 게시판 정보 불러오기.
     public Community getCommunityList(Long id);
     //게시판 등록
-    public void registerBoard(CommunityBoardDTO boardDTO) throws Exception;
+    public void registerBoard(CommunityBoardDTO boardDTO,String email) throws Exception;
     //게시판 글 전체조회
     public Page<CommunityBoardDTO> getCommunityBoardList(Long id, PageRequestDTO pageRequestDTO);
     //게시판 글 상세조회

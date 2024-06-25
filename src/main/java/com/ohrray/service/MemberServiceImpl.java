@@ -85,7 +85,7 @@ public class MemberServiceImpl implements MemberService {
         System.out.println("입력한 비밀번호가 맞아야 삭제가능.");
         if(matches){
             System.out.println("여기는 비밀번호가 맞아서 삭제하는곳");
-            memberRepository.deleteByEmail(memberDTO.getEmail());
+            memberRepository.deleteById(findMember.getId());
             return true;
         }else{
             System.out.println("비밀번호 잘못입력해서 안됨.");

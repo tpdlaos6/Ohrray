@@ -18,6 +18,7 @@ import java.util.List;
 public class ProductFormDTO {
 
     private Long pno; //상품코드
+    private Long mid; //작성자
     private String productName; //상품명
     private int productPrice; //상품가격
     private int readCount; //조회수

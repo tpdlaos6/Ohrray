@@ -1,5 +1,6 @@
 package com.ohrray.domain;
 
+import com.ohrray.entity.Member;
 import com.ohrray.entity.Product;
 import com.ohrray.entity.ProductQnA;
 import com.ohrray.entity.ProductReview;
@@ -19,7 +20,7 @@ public class ProductQnADTO {
 
     private Long pid;
 
-    private Long mid;
+    private String email;
 
     private String question;
 
@@ -29,8 +30,19 @@ public class ProductQnADTO {
 
     private LocalDateTime modDate;
 
-    public ProductQnA changeEntity(ProductQnADTO productQnADTO, Product product){
+    public ProductQnADTO(Long id, String question) {
+        this.id =id;
+        this.question=question;
+    }
+
+    public ProductQnADTO(Long id) {
+        this.id=id;
+    }
+
+
+    public ProductQnA changeEntity(ProductQnADTO productQnADTO, Product product, Member member){
         ProductQnA productQnA = new ProductQnA();
+        productQnA.setMember(member);
         productQnA.setProduct(product);
         productQnA.setQuestion(productQnADTO.getQuestion());
         productQnA.setAnswer(productQnADTO.getAnswer());
@@ -40,12 +52,17 @@ public class ProductQnADTO {
     public ProductQnADTO changeDTO(ProductQnA productQnA){
         this.id =productQnA.getId();
         this.pid=productQnA.getProduct().getId();
-        this.mid = 1L;
+        this.email = productQnA.getMember().getEmail();
         this.question= productQnA.getQuestion();
         this.answer= productQnA.getAnswer();
         this.regDate=productQnA.getRegDate();
         this.modDate=productQnA.getModDate();
         return this;
+    }
+    public ProductQnADTO(Long pno ,String question,String email){
+        this.pid=pno;
+        this.question=question;
+        this.email =email;
     }
 
 }

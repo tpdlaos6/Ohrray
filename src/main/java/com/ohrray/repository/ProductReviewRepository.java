@@ -10,6 +10,8 @@ import java.util.List;
 public interface ProductReviewRepository extends JpaRepository<ProductReview,Long> {
     @Query(" select r " +
             " from ProductReview r  " +
+            " join fetch r.member m " +
+            " join fetch r.product p" +
             " where r.product.id= :pno")
     List<ProductReview> findByProduct(@Param("pno") Long pno);
 }

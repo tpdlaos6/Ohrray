@@ -2,10 +2,14 @@ package com.ohrray.controller;
 
 import com.ohrray.domain.CommunityBoardDTO;
 import com.ohrray.domain.MapDTO;
+import com.ohrray.domain.MemberDTO;
 import com.ohrray.domain.PageRequestDTO;
 import com.ohrray.service.CommunityService;
+import com.ohrray.service.MemberService;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.ParseException;
 import org.springframework.data.domain.Page;
@@ -26,6 +30,7 @@ import java.util.List;
 public class CommunityController {
     //자동주입.
     private final CommunityService communityService;
+    private final MemberService memberService;
 
 
     //Json 공공데이터 저장 함수
@@ -63,18 +68,36 @@ public class CommunityController {
     }
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/register")
-    public String insertBoard( CommunityBoardDTO boardDTO) throws  Exception{
-        communityService.registerBoard(boardDTO);
+    public String insertBoard( CommunityBoardDTO boardDTO,HttpServletRequest request) throws  Exception{
+        HttpSession session = request.getSession();
+        String email = (String)session.getAttribute("email");
+        communityService.registerBoard(boardDTO,email);
         return "redirect:/community/board?id="+boardDTO.getCid();
     }
     @PreAuthorize("hasRole('ROLE_USER')")
-    @GetMapping({"/read","update"})
-    public void getOneBoard(@RequestParam("bid")Long bid,@RequestParam("id")Long cid,Model model){
+    @GetMapping("/read")
+    public void getOneBoard(@RequestParam("bid")Long bid, @RequestParam("id")Long cid, Model model, HttpServletRequest request){
+        HttpSession session = request.getSession();
+        String email = (String)session.getAttribute("email");
+        MemberDTO memberByEmail = memberService.getMemberByEmail(email);
+        System.out.println("memberByEmail.getId() = " + memberByEmail.getId());
         CommunityBoardDTO oneBoard = communityService.getOneBoard(bid);
-        System.out.println("oneBoard.getFileName() = " + oneBoard.getFileName().toString());
         model.addAttribute("result",communityService.getOneBoard(bid));
         model.addAttribute("id",cid);
+        model.addAttribute("member",memberByEmail);
     }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("/update")
+    public void getOneBoard(@RequestParam("bid")Long bid, Model model, HttpServletRequest request){
+        HttpSession session = request.getSession();
+        String email = (String)session.getAttribute("email");
+        MemberDTO memberByEmail = memberService.getMemberByEmail(email);
+        CommunityBoardDTO oneBoard = communityService.getOneBoard(bid);
+        model.addAttribute("result",communityService.getOneBoard(bid));
+        model.addAttribute("member",memberByEmail);
+    }
+
 
     //게시판 글 업데이트
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -118,5 +141,5 @@ public class CommunityController {
     //날씨 정보 가져오기 API
 
 
-    
+
 }

@@ -1,6 +1,5 @@
 package com.ohrray.repository;
 
-import com.ohrray.domain.MapDTO;
 import com.ohrray.entity.CommunityBoard;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

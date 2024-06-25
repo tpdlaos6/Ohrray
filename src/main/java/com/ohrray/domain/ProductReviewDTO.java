@@ -1,5 +1,6 @@
 package com.ohrray.domain;
 
+import com.ohrray.entity.Member;
 import com.ohrray.entity.Product;
 import com.ohrray.entity.ProductReview;
 import lombok.*;
@@ -23,8 +24,9 @@ public class ProductReviewDTO {
     private LocalDateTime modDate;
 
 
-    public ProductReview changeEntity(ProductReviewDTO productReviewDTO, Product product){
+    public ProductReview changeEntity(ProductReviewDTO productReviewDTO, Product product, Member member){
         ProductReview productReview = new ProductReview();
+        productReview.setMember(member);
         productReview.setProduct(product);
         productReview.setReview(productReviewDTO.getReview());
         productReview.setAnswer(productReviewDTO.getAnswer());

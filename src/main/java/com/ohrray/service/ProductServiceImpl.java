@@ -54,9 +54,9 @@ public class ProductServiceImpl implements ProductService{
 /*상품등록 service*************************************************************************/
     @Transactional
     @Override
-    public void registerProductSales(ProductFormDTO productFormDTO) throws Exception {
+    public void registerProductSales(ProductFormDTO productFormDTO ,String email) throws Exception {
 
-
+        Member member = memberRepository.findByEmail(email).orElseThrow();
 
         System.out.println("register서비스시작");
         /*formDTO에서 각 DTO에 분배 ************************************************************/
@@ -140,6 +140,7 @@ public class ProductServiceImpl implements ProductService{
         Product product = Product
                 .builder()
                 .id(productDTO.getPno())
+                .member(member)
                 .productName(productDTO.getProductName())
                 .productPrice(productDTO.getProductPrice())
                 .productImg(savedProductImg)
@@ -257,6 +258,7 @@ public class ProductServiceImpl implements ProductService{
         System.out.println("oneProduct.toString() = " + oneProduct.toString());
         ProductFormDTO dto = ProductFormDTO.builder()
                 .pno(oneProduct.getId())
+                .mid(oneProduct.getMember().getId())
                 .productName(oneProduct.getProductName())
                 .productPrice(oneProduct.getProductPrice())
                 .readCount(oneProduct.getReadCount())
@@ -289,22 +291,24 @@ public class ProductServiceImpl implements ProductService{
     public ProductFormDTO updateProduct(ProductFormDTO productFormDTO) throws Exception {
         System.out.println("수정 서비스 시작");
         //수정전 상품
-        Optional<Product> EXProduct = productRepository.findById(productFormDTO.getPno());
+        Product product = productRepository.findById(productFormDTO.getPno()).orElseThrow();
         //카테고리 수정
         ProductCategotyDTO cateDTO = new ProductCategotyDTO();
         cateDTO.setData(productFormDTO.getMainCategory(), productFormDTO.getSubCategory());
 
-        Optional<ProductCategory> ExCategory = categoryRepository.findById(EXProduct.get().getProductCategory().getId());
-        ExCategory.get().setMainCategory(cateDTO.getMainCategory());
-        ExCategory.get().setSubCategory(cateDTO.getSubCategory());
+        ProductCategory category = categoryRepository.findById(product.getProductCategory().getId()).orElseThrow();
+        category.setMainCategory(cateDTO.getMainCategory());
+        category.setSubCategory(cateDTO.getSubCategory());
         //기존 상품 옵션값 삭제
-        List<Option> options = optionRepository.findbyProduct_id(EXProduct.get().getId());
+        List<Option> options = optionRepository.findbyProduct_id(product.getId());
         for (Option option : options){
             optionRepository.delete(option);
         }
-
+        //이미지 변경할 엔티티 영속성에 올리기
+        ProductImg updateProductImg = productImgRepository.findById(product.getProductImg().getId()).orElseThrow();
         //수정전 상품 이미지
-        ProductImg EXproductImg = EXProduct.get().getProductImg();
+        ProductImg EXproductImg = product.getProductImg();
+
         //수정된 이미지파일 객체
         ProductImgDTO productImgDTO = new ProductImgDTO();
         productImgDTO.setData(productFormDTO.getMainImg(),productFormDTO.getDetailImg());
@@ -327,42 +331,22 @@ public class ProductServiceImpl implements ProductService{
         }else{
             countOfUploadMainImg=0;
         }
-        //계속 사용할 이미지 처리
-        switch (countOfUploadMainImg){
-            case 3:
-                break;
-            case 2:
-                mainInformation.add(EXproductImg.getMainImg3());
-                break;
-            case 1:
-                mainInformation.add(EXproductImg.getMainImg2());
-                mainInformation.add(EXproductImg.getMainImg3());
-                break;
-            case 0:
-                mainInformation.add(EXproductImg.getMainImg3());
-                mainInformation.add(EXproductImg.getMainImg2());
-                mainInformation.add(EXproductImg.getMainImg1());
-        }
 
 
-        //기존에 등록된 이미지 처리
-        switch (countOfUploadMainImg){
-            case 3:
-                if (EXproductImg.getMainImg3() != null && !EXproductImg.getMainImg3().isEmpty()) {
-                    removeFile(EXproductImg.getMainImg3());
-                }
-            case 2:
-                if (EXproductImg.getMainImg2() != null && !EXproductImg.getMainImg2().isEmpty()) {
-                    removeFile(EXproductImg.getMainImg2());
-                }
+        //기존에 등록된 이미지 삭제 처리
+            if (EXproductImg.getMainImg3() != null && !EXproductImg.getMainImg3().isEmpty()) {
+                removeFile(EXproductImg.getMainImg3());
+            }
+            if (EXproductImg.getMainImg2() != null && !EXproductImg.getMainImg2().isEmpty()) {
+                removeFile(EXproductImg.getMainImg2());
+            }
 
-            case 1:
-                if (EXproductImg.getMainImg1() != null && !EXproductImg.getMainImg1().isEmpty()) {
-                    removeFile(EXproductImg.getMainImg1());
-                }
+            if (EXproductImg.getMainImg1() != null && !EXproductImg.getMainImg1().isEmpty()) {
+                removeFile(EXproductImg.getMainImg1());
+            }
 
 
-        }
+
 
 
 
@@ -385,40 +369,16 @@ public class ProductServiceImpl implements ProductService{
             countOfUploadDetailImg=0;
         }
 
-        //기존에 등록되었지만 사용할 메인이미지 이름 추가
-        switch (countOfUploadDetailImg){
-            case 3:
-                break;
-            case 2:
-                detailInformation.add(EXproductImg.getDetailImg3());
-                break;
-            case 1:
-                detailInformation.add(EXproductImg.getDetailImg2());
-                detailInformation.add(EXproductImg.getDetailImg3());
-                break;
-            case 0:
-                detailInformation.add(EXproductImg.getDetailImg1());
-                detailInformation.add(EXproductImg.getDetailImg2());
-                detailInformation.add(EXproductImg.getDetailImg3());
-                break;
-        }
         //기존에 등록되었지만 사용하지 않은 이미지 파일 제거
-        switch (countOfUploadDetailImg){
-            case 3:
-                if (EXproductImg.getDetailImg3() != null && !EXproductImg.getDetailImg3().isEmpty()) {
-                    removeFile(EXproductImg.getDetailImg3());
-                }
-            case 2:
-                if (EXproductImg.getDetailImg2() != null && !EXproductImg.getDetailImg2().isEmpty()) {
-                    removeFile(EXproductImg.getDetailImg2());
-                }
-            case 1:
-                if (EXproductImg.getDetailImg1() != null && !EXproductImg.getDetailImg1().isEmpty()) {
-                    removeFile(EXproductImg.getDetailImg1());
-                };
-            case 0:
-                break;
-        }
+            if (EXproductImg.getDetailImg3() != null && !EXproductImg.getDetailImg3().isEmpty()) {
+                removeFile(EXproductImg.getDetailImg3());
+            }
+            if (EXproductImg.getDetailImg2() != null && !EXproductImg.getDetailImg2().isEmpty()) {
+                removeFile(EXproductImg.getDetailImg2());
+            }
+            if (EXproductImg.getDetailImg1() != null && !EXproductImg.getDetailImg1().isEmpty()) {
+                removeFile(EXproductImg.getDetailImg1());
+            };
 
         //productImgDTO -> ProductImg(Entity)변환
         // ProductImg 빌더를 사용하여 객체 생성
@@ -451,7 +411,7 @@ public class ProductServiceImpl implements ProductService{
                     .size(optionDTO.getSize())
                     .stock(optionDTO.getStock())
                     .fullOption(optionDTO.getFullOption())
-                    .product(EXProduct.get())
+                    .product(product)
                     .build();
             optionRepository.save(option);
             optionList.add(option);
@@ -461,11 +421,11 @@ public class ProductServiceImpl implements ProductService{
 
 
         //기존 Product 호출
-        Product product = EXProduct.get();
+
         product.setProductName(productFormDTO.getProductName());
         product.setProductPrice(productFormDTO.getProductPrice());
         product.setReadCount(productFormDTO.getReadCount());
-        product.setProductCategory(ExCategory.get());
+        product.setProductCategory(category);
         productRepository.deleteById(product.getProductImg().getId());
         product.setProductImg(savedProductImg);
         product.setOptions(optionList);

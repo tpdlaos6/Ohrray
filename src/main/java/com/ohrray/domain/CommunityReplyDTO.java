@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class CommunityReplyDTO {
     private Long id;
     private Long bid;
-    private Member member;
+    private Long mid;
     private String content;
     private LocalDateTime regDate;
     private LocalDateTime modDate;
@@ -24,7 +24,7 @@ public class CommunityReplyDTO {
         CommunityReplyDTO communityReplyDTO = new CommunityReplyDTO();
         this.id = communityReply.getId();
         this.bid = communityReplyDTO.getBid();
-        this.member=communityReply.getMember();
+        this.mid=communityReply.getMember().getId();
         this.content=communityReply.getContent();
         this.regDate = communityReply.getRegDate();
         this.modDate = communityReply.getModDate();

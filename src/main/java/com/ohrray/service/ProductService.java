@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ProductService {
 
-    public void registerProductSales(ProductFormDTO productFormDTO) throws Exception;
+    public void registerProductSales(ProductFormDTO productFormDTO , String email) throws Exception;
 
     public PageResultDTO findSalesProduct(PageRequestDTO pageRequestDTO);
 

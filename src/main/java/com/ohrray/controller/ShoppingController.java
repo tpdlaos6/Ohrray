@@ -39,17 +39,16 @@ public class ShoppingController {
     public void registerForm(){
 
     }
-    @GetMapping("/delivery")
-    public void hi(){
 
-    }
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PostMapping("/register")
-    public String registerProductSales(ProductFormDTO productFormDTO){
+    public String registerProductSales(ProductFormDTO productFormDTO ,HttpServletRequest request){
+        HttpSession session =request.getSession();
+        String email = (String)session.getAttribute("email");
         System.out.println("productFormDTO.getOption() = " + productFormDTO.getOption());
         
         try{
-           productService.registerProductSales(productFormDTO);
+           productService.registerProductSales(productFormDTO ,email);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -67,13 +66,13 @@ public class ShoppingController {
     }
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/read")
-    public void oneOfProduct(Long pno ,int page, int size ,Model model){
-        System.out.println("컨트롤러");
-        System.out.println("pno = " + pno);
-        System.out.println("size = " + size);
+    public void oneOfProduct(Long pno ,int page, int size ,Model model, HttpServletRequest request){
+        HttpSession session = request.getSession();
+        String email = (String)session.getAttribute("email");
         model.addAttribute("product" , productService.findOneProduct(pno));
         model.addAttribute("page",page);
         model.addAttribute("size",size);
+        model.addAttribute("member", memberService.getMemberByEmail(email));
     }
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @GetMapping("/update")

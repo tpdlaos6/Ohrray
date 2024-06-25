@@ -37,7 +37,7 @@ public class ReplyServiceImpl implements ReplyService{
 
     @Override
     public CommunityReplyDTO get(CommunityReplyDTO communityReplyDTO) {
-        CommunityReply find = replyRepository.findByIds(communityReplyDTO.getId()).orElseThrow(EntityNotFoundException::new);
+        CommunityReply find = replyRepository.findById(communityReplyDTO.getId()).orElseThrow(EntityNotFoundException::new);
         return communityReplyDTO.entityToDto(find);
     }
 
@@ -48,7 +48,7 @@ public class ReplyServiceImpl implements ReplyService{
         CommunityReply find = replyRepository.findByIds(communityReplyDTO.getId()).orElseThrow(EntityNotFoundException::new);
         System.out.println("find.getContent() = " + find.getContent());
         System.out.println("find.getId() = " + find.getId());
-        
+
         find.setContent(communityReplyDTO.getContent());
 
         return communityReplyDTO.entityToDto(find);
@@ -58,9 +58,7 @@ public class ReplyServiceImpl implements ReplyService{
     @Override
     public void deleteReply(CommunityReplyDTO communityReplyDTO) {
         replyRepository.deleteById(communityReplyDTO.getId());
-        System.out.println("이상이 없어야하는데?");
     }
-
     //목록가져와
     @Override
     public List<CommunityReplyDTO> getList(Long bid) {
@@ -68,7 +66,7 @@ public class ReplyServiceImpl implements ReplyService{
         List<CommunityReplyDTO> list = getListReply.stream().map(getList -> CommunityReplyDTO.builder()
                 .id(getList.getId())
                 .bid(getList.getCommunityBoard().getId())
-                .member(getList.getMember())
+                .mid(getList.getMember().getId())
                 .content(getList.getContent())
                 .modDate(getList.getModDate())
                 .regDate(getList.getRegDate())
@@ -83,7 +81,7 @@ public class ReplyServiceImpl implements ReplyService{
         List<ProductReviewDTO> list = getListReview.stream().map(getList -> ProductReviewDTO.builder()
                 .id(getList.getId())
                 .pno(getList.getProduct().getId())
-                .mid(1L)
+                .mid(getList.getMember().getId())
                 .review(getList.getReview())
                 .answer(getList.getAnswer())
                 .rating(getList.getRating())
@@ -106,7 +104,8 @@ public class ReplyServiceImpl implements ReplyService{
     public ProductReviewDTO addReview(ProductReviewDTO productReviewDTO ,Long orderDetailId) {
         System.out.println("productReviewDTO.getReview() = " + productReviewDTO.getReview());
         Product product = productRepository.findById(productReviewDTO.getPno()).orElseThrow(EntityNotFoundException::new);
-        ProductReview productReview = productReviewDTO.changeEntity(productReviewDTO, product);
+        Member member = memberRepository.findById(productReviewDTO.getMid()).orElseThrow();
+        ProductReview productReview = productReviewDTO.changeEntity(productReviewDTO, product,member);
         ProductReview savedproduct = reviewRepository.save(productReview);
 
         OrderDetail orderDetail = orderDetailRepository.findById(orderDetailId).orElseThrow();
@@ -132,17 +131,18 @@ public class ReplyServiceImpl implements ReplyService{
 
     @Override
     public List<ProductQnADTO> getQNAList(Long pno) {
+        System.out.println("pno = " + pno);
         List<ProductQnA> getListQnA = productQnARepository.findByProduct(pno);
+        System.out.println("getListQnA.get(0).toString() = " + getListQnA.get(0).toString());
         List<ProductQnADTO> list = getListQnA.stream().map(getList -> ProductQnADTO.builder()
                 .id(getList.getId())
                 .pid(getList.getProduct().getId())
-                .mid(1L)
+                .email(getList.getMember().getNickName())
                 .question(getList.getQuestion())
                 .answer(getList.getAnswer())
-                .modDate(getList.getModDate())
-                .regDate(getList.getRegDate())
                 .build()
         ).toList();
+        System.out.println("list.get(0).toString() = " + list.get(0).toString());
         return list;
     }
 
@@ -155,12 +155,13 @@ public class ReplyServiceImpl implements ReplyService{
     @Override
     public ProductQnADTO addQNA(ProductQnADTO productQnADTO) {
         System.out.println("productReviewDTO.getReview() = " + productQnADTO.getQuestion());
+        Member member = memberRepository.findByEmail(productQnADTO.getEmail()).orElseThrow();
         Product product = productRepository.findById(productQnADTO.getPid()).orElseThrow(EntityNotFoundException::new);
-        ProductQnA productQnA = productQnADTO.changeEntity(productQnADTO, product);
+        ProductQnA productQnA = productQnADTO.changeEntity(productQnADTO, product,member);
         ProductQnA savedproduct = productQnARepository.save(productQnA);
         return  productQnADTO.changeDTO(savedproduct);
     }
-
+    @Transactional
     @Override
     public ProductQnADTO updateQNA(ProductQnADTO productQnADTO) {
         ProductQnA find = productQnARepository.findById(productQnADTO.getId()).orElseThrow(EntityNotFoundException::new);

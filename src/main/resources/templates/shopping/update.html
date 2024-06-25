@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="description" content="">
@@ -167,7 +166,25 @@
             background-color: #ffffff; /* 배경색 설정 */
             cursor: pointer;
         }
+        .category-box label {
+            font-weight: bold;
+            color: #495057;
+        }
 
+        .category-box input[type="text"] {
+            margin-bottom: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+
+        .category-box .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .inputy{
+            height: 30px;
+            width: 300px;
+        }
 
 
 
@@ -261,6 +278,8 @@
         </div>
         <!-- Cart Menu -->
         <div class="cart-fav-search mb-100">
+            <a sec:authorize="isAnonymous()" href="@{/member/login}" ><svg class="ml-1" style="width:20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M217.9 105.9L340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1L32 320c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM352 416l64 0c17.7 0 32-14.3 32-32l0-256c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c53 0 96 43 96 96l0 256c0 53-43 96-96 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z"/></svg> 로그인 </a>
+            <a sec:authorize="isAuthenticated()" th:href="@{/logout}" ><svg class="ml-1" style="width:20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M217.9 105.9L340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1L32 320c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM352 416l64 0c17.7 0 32-14.3 32-32l0-256c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c53 0 96 43 96 96l0 256c0 53-43 96-96 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z"/></svg> 로그아웃 </a>
             <a th:href="@{/shopping/cart}" class="cart-nav"><img src="/img/core-img/cart.png" alt="">장바구니 <span></span></a>
             <a href="#" class="search-nav"><img src="/img/core-img/search.png" alt="">제품검색</a>
         </div>
@@ -322,22 +341,24 @@
                 </div>
 
 
-                <div class="col-12 col-lg-5">
+                <div class="col-12 col-lg-5 col-md-12 col-sm-12">
                     <div class="single_product_desc">
                         <!-- Product Meta Data -->
                         <div class="product-meta-data">
                             <input type="hidden" name="pno" th:value="${product.pno}">
                             <div class="line"></div>
-                            <label for="productName" class="form-label">상품 이름</label>
-                            <input type="text" class="form-control" id="productName" name="productName"
-                                   th:placeholder="${product.productName}" th:value="${product.productName}" required/><br/>
-                            <span class="mtext-106 cl2">
-						<label for="price" class="form-label">상품 가격</label>
-                        <input type="text" class="form-control" id="price" name="productPrice"
-                               th:placeholder="${product.productPrice}" th:value="${product.productPrice}" required/><br/>
-                        <input type="hidden"name="readCount" th:value="${product.readCount}">
-                    </span>
-                    <label class="form-label">카테고리</label>
+                            <div class="container category-box">
+                                <label for="productName" class="form-label">상품 이름</label>
+                                <input type="text" class="form-control inputy" id="productName" name="productName"
+                                       th:placeholder="${product.productName}" th:value="${product.productName}" required/><br/>
+                                <span class="mtext-106 cl2">
+                                <label for="price" class="form-label">상품 가격</label>
+                                <input type="text" class="form-control inputy" id="price" name="productPrice"
+                                   th:placeholder="${product.productPrice}" th:value="${product.productPrice}" required/><br/>
+                                <input type="hidden"name="readCount" th:value="${product.readCount}">
+                                </span>
+                            </div>
+                            <label class="form-label">카테고리</label>
 
 
                             <input id="selectedCate" type="hidden" th:value="${product.subCategory}">
@@ -702,6 +723,14 @@
                 row.remove();
 
         });
+    });
+    $(document).ready(function() {
+        // id가 "subCategory"인 요소의 값을 가져옴
+        var subCategoryValue = $('#subCategory').val();
+        console.log(subCategoryValue);
+        // 해당 값을 가진 name이 "subCategory"인 라디오 버튼을 체크함
+        $('input[name=subCategory][value=' + subCategoryValue + ']').prop('checked', true);
+
     });
 
 

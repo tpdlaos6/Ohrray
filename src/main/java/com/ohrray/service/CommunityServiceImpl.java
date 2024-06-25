@@ -5,12 +5,8 @@ import com.ohrray.Util.NaverSearchAPI;
 import com.ohrray.domain.CommunityBoardDTO;
 import com.ohrray.domain.MapDTO;
 import com.ohrray.domain.PageRequestDTO;
-import com.ohrray.domain.ProductImgDTO;
 import com.ohrray.entity.*;
-import com.ohrray.repository.CommunityBoardRepository;
-import com.ohrray.repository.CommunityImgRepository;
-import com.ohrray.repository.CommunityRepository;
-import com.ohrray.repository.MountainRepository;
+import com.ohrray.repository.*;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletException;
@@ -38,6 +34,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class CommunityServiceImpl implements CommunityService{
+    private final MemberRepository memberRepository;
     @Value("${communityImgPath}")
     private String uploadPath;
 
@@ -48,8 +45,11 @@ public class CommunityServiceImpl implements CommunityService{
     private final MountainRepository mountainRepository;
     private final CommunityImgRepository imgRepository;
     private final CommunityBoardRepository boardRepository;
+    private final ReplyRepository replyRepository;
     //산 id로 커뮤니티 및 게시판 정보 불러오기.
     public Community getCommunityList(Long id){
+        System.out.println("id = " + id);
+        System.out.println("서비스 영역");
         return communityRepository.findByMountainId(id);
     }
 
@@ -96,6 +96,7 @@ public class CommunityServiceImpl implements CommunityService{
         }
         CommunityBoardDTO communityBoardDTO = CommunityBoardDTO.builder()
                 .bid(findOneBoard.getId())
+                .mid(findOneBoard.getMember().getId())
                 .cid(findOneBoard.getCommunity().getId())
                 .title(findOneBoard.getTitle())
                 .content(findOneBoard.getContent())
@@ -109,9 +110,9 @@ public class CommunityServiceImpl implements CommunityService{
     //커뮤니티 게시글 등록
     @Transactional
     @Override
-    public void registerBoard(CommunityBoardDTO boardDTO) throws Exception {
+    public void registerBoard(CommunityBoardDTO boardDTO,String email) throws Exception {
         System.out.println(boardDTO.getImgFiles().toString());
-
+        Member member = memberRepository.findByEmail(email).orElseThrow();
         MultipartFile[] mainImg = new MultipartFile[boardDTO.getImgFiles().size()];
         List<String> ImgFileName = new ArrayList<>();
 
@@ -129,6 +130,7 @@ public class CommunityServiceImpl implements CommunityService{
         Community savedCommunity = communityRepository.findById(boardDTO.getCid()).orElseThrow(EntityNotFoundException::new);
         CommunityBoard board = CommunityBoard.builder()
                 .community(savedCommunity)
+                .member(member)
                 .title(boardDTO.getTitle())
                 .content(boardDTO.getContent())
                 .communityImg(communityImg)

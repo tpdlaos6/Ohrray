@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReplyController {
     private final ReplyService replyService;
+
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/community/add")
@@ -37,11 +36,12 @@ public class ReplyController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/community/getList")
     public ResponseEntity<List<CommunityReplyDTO>> getList(@RequestParam("bid") Long bid){
-        System.out.println("bid = " + bid);
+        System.out.println("bid 시불 = " + bid);
         List<CommunityReplyDTO> list = replyService.getList(bid);
-        if (list.isEmpty())
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        else
+        System.out.println("list.get(0).getContent() = " + list.get(0).getContent());
+//        if (list.isEmpty())
+//            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+//        else
             return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
@@ -63,6 +63,7 @@ public class ReplyController {
     }
     @DeleteMapping("/community/delete")
     public ResponseEntity<String> deleteReply(CommunityReplyDTO communityReplyDTO) {
+        System.out.println("communityReplyDTO.getId() = " + communityReplyDTO.getId());
         replyService.deleteReply(communityReplyDTO);
         return new ResponseEntity<>("삭제성공", HttpStatus.OK);
     }
@@ -95,7 +96,6 @@ public class ReplyController {
         else
             return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
     @DeleteMapping("/shopping/delete")
     public ResponseEntity<String> deleteReview(ProductReviewDTO productReviewDTO) {
         replyService.deleteReview(productReviewDTO);
@@ -103,8 +103,14 @@ public class ReplyController {
     }
 //-QNA----------------------------------------------------------------------------------
     @PostMapping("/shopping/addQNA")
-    public ResponseEntity<ProductQnADTO> addQNA(ProductQnADTO productQnADTO) {
-        System.out.println("컨트롤러부분 productReviewDTO.getReview() = " + productQnADTO.getQuestion());
+    public ResponseEntity<ProductQnADTO> addQNA(@RequestParam("pno")Long pno, @RequestParam("question")String question, HttpServletRequest request) {
+        System.out.println("pno = " + pno);
+        System.out.println("question = " + question);
+        HttpSession session = request.getSession();
+        String email = (String)session.getAttribute("email");
+        ProductQnADTO productQnADTO = new ProductQnADTO(pno,question,email);
+
+        System.out.println(" 컨트롤러부분productQnADTO.getQuestion() = " + productQnADTO.getQuestion());
         ProductQnADTO result = replyService.addQNA(productQnADTO);
         if (result == null)
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -115,8 +121,9 @@ public class ReplyController {
     //댓글 목록보기
     @GetMapping("/shopping/getQNAList")
     public ResponseEntity<List<ProductQnADTO>> getQNAList(@RequestParam("pno") Long pno){
-        System.out.println("pno = " + pno);
+        System.out.println(" 컨트롤러 pno = " + pno);
         List<ProductQnADTO> list = replyService.getQNAList(pno);
+        System.out.println("list.get(0).toString() = " + list.get(0).toString());
         if (list.isEmpty())
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         else
@@ -131,7 +138,8 @@ public class ReplyController {
 
 
     @PutMapping("/shopping/updateQNA")
-    public ResponseEntity<ProductQnADTO> updateReview(ProductQnADTO productQnADTO) {
+    public ResponseEntity<ProductQnADTO> updateReview(@RequestParam("id")Long id, @RequestParam("content") String question) {
+        ProductQnADTO productQnADTO =new ProductQnADTO(id,question);
         ProductQnADTO result = replyService.updateQNA(productQnADTO);
         if (result == null)
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -139,7 +147,8 @@ public class ReplyController {
             return new ResponseEntity<>(result, HttpStatus.OK);
     }
     @DeleteMapping("/shopping/deleteQNA")
-    public ResponseEntity<String> deleteReview(ProductQnADTO productQnADTO) {
+    public ResponseEntity<String> deleteReview(@RequestParam("id")Long id) {
+        ProductQnADTO productQnADTO =new ProductQnADTO(id);
         replyService.deleteQNA(productQnADTO);
         return new ResponseEntity<>("삭제성공", HttpStatus.OK);
     }

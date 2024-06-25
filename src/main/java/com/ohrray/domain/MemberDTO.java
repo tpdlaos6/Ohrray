@@ -61,8 +61,6 @@ public class MemberDTO {
         this.addressDetail = member.getAddressDetail();
         this.social = member.isSocial();
         this.role = member.getRoleSet();
-        this.modDate = member.getModDate();
-        this.regDate = member.getRegDate();
         return this;
     }
 }

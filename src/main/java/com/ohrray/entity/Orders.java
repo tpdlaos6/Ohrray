@@ -19,7 +19,7 @@ public class Orders extends BaseEntity {
     private Long id;
 
     //주문자 정보
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
     @Builder.Default // Builder를 사용하여 초기화
