@@ -30,17 +30,15 @@ public class Cart extends BaseEntity {
     // 상품 옵션
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "OPTIONS_ID")
-    private Options options;
+    private Option option;
 
 
-    public void changeOptions(Options options){
-        this.options=options;
+    public void changeOptions(Option options){
+        this.option=option;
     }
 
 
-    public void changeMember(Member member){
-        this.member=member;
-    }
+    public void changeMember(Member member){this.member=member;}
 
 
 
@@ -60,7 +58,7 @@ public class Cart extends BaseEntity {
     }
 
     public void changeProductCount(int productCount){
-        this.productCount=productCount;
+        this.productCount+=productCount;
     }
 
 
@@ -79,8 +77,9 @@ public class Cart extends BaseEntity {
     }
 
     // 장바구니 상품 수량 변경
-    public void updateCount(int productCount){
-        this.productCount=productCount;
+    public int updateCount(int productCount){
+        this.productCount+=productCount;
+        return this.productCount;
     }
 
 }

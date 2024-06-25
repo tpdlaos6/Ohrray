@@ -4,10 +4,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import lombok.Data;
+import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ProductCategory {
 
     //상품게시물 ok
@@ -20,4 +24,6 @@ public class ProductCategory {
 
     //소분류
     private String subCategory;
+
+
 }

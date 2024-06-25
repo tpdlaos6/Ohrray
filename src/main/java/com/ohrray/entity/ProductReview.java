@@ -1,11 +1,14 @@
 package com.ohrray.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 @Entity
-@Data
-public class ProductReview {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProductReview extends BaseEntity{
     //상품리뷰 pk
     @Id @GeneratedValue
     @Column(name = "PRODUCT_REVIEW_ID")
@@ -27,6 +30,8 @@ public class ProductReview {
     //답변(null가능)
     @Column(nullable = true)
     private String answer;
+
+    private float rating;
     
     //등록시간
     //수정시간
