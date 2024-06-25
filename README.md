@@ -22,7 +22,6 @@
 <br>
 
 ## 🎥 시연 영상(유튜브 링크)
-<a href="https://youtu.be/2FKU__ETeFA" target="_blank">새 탭에서 열기</a>
 https://youtu.be/2FKU__ETeFA
 
 <br>
