@@ -1,94 +1,125 @@
 package com.ohrray;
 
-import com.ohrray.entity.Cart;
 import com.ohrray.entity.Member;
-import com.ohrray.repository.CartRepository;
+import com.ohrray.entity.ProductCategory;
 import com.ohrray.repository.LoginRepository;
-import com.ohrray.repository.MemberRepository;
-import com.ohrray.repository.ProductRepository;
-import com.ohrray.service.CartService;
+import com.ohrray.repository.ProductCategoryRepository;
+import com.ohrray.service.ProductServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.IntStream;
 
 @SpringBootTest
-@AutoConfigureMockMvc
 class OhrrayApplicationTests {
-	@Autowired LoginRepository loginRepository;
-	@Autowired ProductRepository productRepository;
-	@Autowired CartService cartService;
-	@Autowired CartRepository cartRepository;
-    @Autowired MemberRepository memberRepository;
+	@Autowired
+	LoginRepository loginRepository;
 
-	@Autowired private MockMvc mockMvc;
+	@Autowired
+	ProductCategoryRepository categoryRepository;
 
-//	public Product saveProduct(){
-//		List<Member> members=new ArrayList<>();
-//
-//		for(int i=1;i<10;i++){
-//			Product product=new Product();
-//			product.setId((long)i);
-//			product.setProductName(i+"만원짜리 상품");
-//			product.setProductPrice(i*10000);
-//			product.setMember(members.get(i));
-//		}
-//
-//		return productRepository.save(product);
-//	}
+	@Value("${uploadPath}")
+	private String uploadPath;
+
+	@Autowired
+	ProductServiceImpl productService;
+
+	@Test
+	void insertMember() {
+
+		IntStream.rangeClosed(11, 20).forEach(i -> {
+			Member member = Member.builder()
+					.email("a" + i + "@a" + i + "com")
+					.password("1234")
+					.build();
+			loginRepository.save(member);
+		});
 
 
-
-	public void saveMember() {
-		List<Member> members = new ArrayList<>();
-		for(int i=1; i<=10; i++) {
-			Member member = new Member();
-			member.setEmail("test" + i + "@test.com");
-			members.add(memberRepository.save(member));
-		}
 	}
 
 	@Test
-	public void saveCart(){
-		List<Member> members=new ArrayList<>();
+	void insertCate() {
+		ProductCategory cate = ProductCategory.builder()
+				.mainCategory("clothes")
+				.subCategory("top")
+				.build();
+		categoryRepository.save(cate);
+		ProductCategory cate1 = ProductCategory.builder()
+				.mainCategory("clothes")
+				.subCategory("bottom")
+				.build();
+		categoryRepository.save(cate1);
+		ProductCategory cate2 = ProductCategory.builder()
+				.mainCategory("clothes")
+				.subCategory("outter")
+				.build();
+		categoryRepository.save(cate2);
+		ProductCategory cate3 = ProductCategory.builder()
+				.mainCategory("clothes")
+				.subCategory("down")
+				.build();
+		categoryRepository.save(cate3);
+		ProductCategory cate4= ProductCategory.builder()
+				.mainCategory("shoes")
+				.subCategory("hikingShoes")
+				.build();
+		categoryRepository.save(cate4);
+		ProductCategory cate5 = ProductCategory.builder()
+				.mainCategory("shoes")
+				.subCategory("trekkingShoes")
+				.build();
+		categoryRepository.save(cate5);
+		ProductCategory cate6 = ProductCategory.builder()
+				.mainCategory("shoes")
+				.subCategory("aijen")
+				.build();
+		categoryRepository.save(cate6);
+		ProductCategory cate7 = ProductCategory.builder()
+				.mainCategory("shoes")
+				.subCategory("lifeStyle")
+				.build();
+		categoryRepository.save(cate7);
+		ProductCategory cate8 = ProductCategory.builder()
+				.mainCategory("bag")
+				.subCategory("backPack")
+				.build();
+		categoryRepository.save(cate8);
+		ProductCategory cate9 = ProductCategory.builder()
+				.mainCategory("bag")
+				.subCategory("accBag")
+				.build();
+		categoryRepository.save(cate9);
+		ProductCategory cate10 = ProductCategory.builder()
+				.mainCategory("equit")
+				.subCategory("cap")
+				.build();
+		categoryRepository.save(cate10);
+		ProductCategory cate11 = ProductCategory.builder()
+				.mainCategory("equit")
+				.subCategory("stick")
+				.build();
+		categoryRepository.save(cate11);
+		ProductCategory cate12 = ProductCategory.builder()
+				.mainCategory("equit")
+				.subCategory("gloves")
+				.build();
+		categoryRepository.save(cate12);
+		ProductCategory cate13 = ProductCategory.builder()
+				.mainCategory("equit")
+				.subCategory("socks")
+				.build();
+		categoryRepository.save(cate13);
 
-		for(int i=1;i<=10;i++){
-			Cart cart=new Cart();
-			cart.setProductCount(1);
-			cart.setMember(members.get(i));
-//			cart.setMember(members.get(i));
-			cartRepository.save(cart);
-		}
 	}
 
+	@Test
+	public void  removefile (){
+		String fileName="221a2326-7a3f-4843-ae75-f0c039ecf894";
+		productService.removeFile(fileName);
+	}
 
-//	@DisplayName("장바구니 담기 테스트")
-//	public void addCart(){
-//		Product product=saveProduct();
-//		Member member=saveMember();
-//
-//		CartDTO cartDTO =new CartDTO();
-//		cartDTO.setProductId(product.getId());
-//		cartDTO.setCount(5);
-//
-//		Long cartProductId= cartService.addCart(cartDTO, member.getEmail());
-//		Cart cartProduct=cartRepository.findById(cartProductId)
-//				.orElseThrow(EntityNotFoundException::new);
-//
-//		assertEquals(product.getId(), cartProduct.getProduct().getId());
-//		assertEquals(cartDTO.getCount(), cartProduct.getProductCount());
-//	}
-
-//	@Test
-//	@DisplayName("장바구니 리스트 테스트")
-//	public void cartList(){
-//		List<CartProduct> cartProductList=cartProductRepository.findAll();
-//		assertThat(cartProductList).isNotEmpty();
-//		assertThat(cartProductList.get(0).getProduct().)
-//	}
 
 }

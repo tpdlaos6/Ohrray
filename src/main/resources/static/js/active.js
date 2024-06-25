@@ -1,5 +1,9 @@
+
 (function ($) {
     'use strict';
+
+
+
 
     var $window = $(window);
 
@@ -115,5 +119,6 @@
             }
         });
     });
-
+    //getList();
+    getListReview();
 })(jQuery);

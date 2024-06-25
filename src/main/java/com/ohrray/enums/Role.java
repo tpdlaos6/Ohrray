@@ -4,7 +4,7 @@ public enum Role {
     //일반회원
     USER,
     //판매자
-    SELLER,
+    MANAGER,
     //관리자
-    ROOT
+    ADMIN
 }
