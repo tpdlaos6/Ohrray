@@ -1,35 +1,31 @@
 package com.ohrray.domain;
 
-
-import com.ohrray.entity.Option;
-import com.ohrray.entity.Product;
-import com.ohrray.entity.ProductImg;
 import lombok.*;
 
-import java.lang.reflect.Array;
-import java.util.Collections;
 import java.util.List;
+
 @Builder
 @Setter @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class CartDTO {
-    //cart id
-    private Long id;
 
-    //cart 쓰는 회원
-    private MemberDTO member;
+    private Long productId;
+    private int count;
 
-    //게시글 정보
-    private ProductDTO product;
+    private Long cartProductId;
+    private String productName;
+    private int productPrice;
+    private String mainImg;
 
-    //상품갯수
-    private int productCount;
+    private List<OptionDTO> option;
 
-    // 상품 옵션
-    private ProductOptionDTO option;
-
-
+//    public CartDTO(Long cartProductId, String productName, int productPrice, int count, String mainImg, OptionDTO option){
+//        this.cartProductId=cartProductId;
+//        this.productName=productName;
+//        this.productPrice=productPrice;
+//        this.count=count;
+//        this.mainImg=mainImg;
+//        this.option=option;
+//    }
 }
-

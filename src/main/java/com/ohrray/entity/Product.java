@@ -1,19 +1,14 @@
 package com.ohrray.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-
-public class Product extends BaseEntity{
+@Data
+public class Product {
     //상품게시물 ok
     @Id @GeneratedValue
     @Column(name = "PRODUCT_ID")
@@ -37,9 +32,9 @@ public class Product extends BaseEntity{
     private String productName;
     //가격
     private int productPrice;
-    // 옵션
+    //옵션
     @OneToMany(mappedBy = "product")
-    private List<Option> options = new ArrayList<>();
+    private List<Options> options = new ArrayList<>();
 
     //본문
     @OneToOne(fetch = FetchType.LAZY)
@@ -48,7 +43,6 @@ public class Product extends BaseEntity{
 
     //조회수
     private int readCount;
-
 
 
     //등록일

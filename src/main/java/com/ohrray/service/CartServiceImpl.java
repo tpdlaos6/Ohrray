@@ -1,76 +1,86 @@
 package com.ohrray.service;
 
-import com.ohrray.domain.*;
+import com.ohrray.domain.CartDTO;
+import com.ohrray.domain.OptionDTO;
 import com.ohrray.entity.Cart;
 import com.ohrray.entity.Member;
-import com.ohrray.entity.Option;
+import com.ohrray.entity.Options;
 import com.ohrray.entity.Product;
-import com.ohrray.repository.*;
+import com.ohrray.repository.CartRepository;
+import com.ohrray.repository.MemberRepository;
+import com.ohrray.repository.OptionsRepository;
+import com.ohrray.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-@Log4j2
 public class CartServiceImpl implements CartService{
 
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
-    private final OptionRepository optionsRepository;
-    private final ProductImgRepository productImgRepository;
+    private final OptionsRepository optionsRepository;
 
     @Transactional
     @Override
-    public Long addCart(AddCartDTO cartDTO, String email) {
+    public Long addCart(CartDTO cartDTO, String email) {
 
         // 상품 조회. 상품이 없으면 예외처리
-        Product product = productRepository.findById(cartDTO.getPno())
+        Product product = productRepository.findById(cartDTO.getProductId())
                 .orElseThrow(() -> new EntityNotFoundException("상품 없음"));
-        System.out.println("product.getProductImg().getMainImg1() = " + product.getProductImg().getMainImg1());
+
         // 회원 조회. 계정 없으면 예외처리
+        Optional<Member> findId = memberRepository.findById(email);
+        Member member = findId.orElseThrow(()->new EntityNotFoundException("계정 없음"));
 
-        Member member = memberRepository.findByEmail(email).orElseThrow(()
-                ->new EntityNotFoundException("계정 없음"));
-        
-        Option productOption = optionsRepository.findById(cartDTO.getOno()).orElseThrow(EntityNotFoundException::new);
+        // 장바구니 조회. 없으면 새로 만들고, cartRepository에 저장
+        Cart cart=cartRepository.findByMemberEmail(member.getEmail());
+        if(cart==null){
+            cart=Cart.createCart(member);
+            cartRepository.save(cart);
+        }
 
-        Cart cart1 = Cart.builder()
-                .product(product)
-                .member(member)
-                .productCount(cartDTO.getCount())
-                .option(productOption)
-                .build();
-        cartRepository.save(cart1);
-
-        return null;
+        // 카트 상품 조회. 카트 안에 동일 상품이 있으면 갯수만 추가. 없으면 카트 상품 생성
+        Cart cartProduct=cartRepository.findByIdAndProductId(cart.getId(), product.getId());
+        if(cartProduct!=null){
+            cartProduct.addCount(cartDTO.getCount());
+            return cartProduct.getId();
+        } else{
+            Cart cartProduct1=Cart.createCartProduct(cart,product, cartDTO.getCount());
+            cartRepository.save(cartProduct1);
+            return cartProduct1.getId();
+        }
     }
 
 
     @Override
-    public List<CartDTO> cartList(String email) {
-        //장바구니 조회를 위한 멤버 조회
-        Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
-        List<CartDTO> list = cartRepository.findByMemberEmail(member.getEmail())
-                .stream().map(cart ->
-                        CartDTO.builder()
-                                .id(cart.getId())
-                                .member(new MemberDTO().changeToDTO(cart.getMember()))
-                                .product(new ProductDTO(cart.getProduct(),cart.getProduct().getProductImg()))
-                                .productCount(cart.getProductCount())
-                                .option(new ProductOptionDTO().setData(cart.getOption().getSize(), cart.getOption().getColor(),cart.getOption().getStock(),cart.getOption().getFullOption()))
-                                .build()
-                ).toList();
+    public List<CartDTO> cartList() {
+        List<CartDTO> list = cartRepository.findAll()
+                .stream()
+                .map(cart ->{
 
+                    List<Options> optionsList=optionsRepository.findByProductId(cart.getProduct().getId());
+
+                    List<OptionDTO> optionDTOs = optionsList.stream()
+                            .map(option -> new OptionDTO(option.getColor(), option.getSize()))
+                            .collect(Collectors.toList());
+
+                    return CartDTO.builder()
+                            .cartProductId(cart.getProduct().getId())
+                            .productName(cart.getProduct().getProductName())
+                            .productPrice(cart.getProduct().getProductPrice())
+                            .count(cart.getProductCount())
+                            .option(optionDTOs)
+                            .build();
+                })
+                .collect(Collectors.toList());
         return list;
-
     }
 
 
@@ -80,21 +90,14 @@ public class CartServiceImpl implements CartService{
     public void updateCartProductCount(Long cartProductId, int productCount) {
         Cart cart=cartRepository.findById(cartProductId)
                 .orElseThrow(EntityNotFoundException::new);
-        cart.setProductCount(cart.updateCount(productCount));
+        cart.updateCount(productCount);
     }
 
     // 장바구니 상품 삭제
     @Transactional
     @Override
     public void deleteCartProduct(Long cartProductId) {
-
         cartRepository.deleteById(cartProductId);
-    }
-
-    @Override
-    public int checkProductCount(Long cartProductId) {
-
-        return cartRepository.findByCartId(cartProductId);
     }
 
     // 상품별 합계
@@ -103,23 +106,10 @@ public class CartServiceImpl implements CartService{
     public Map<Long, Integer> productTotal(List<CartDTO> cartLists) {
         Map<Long, Integer> productTotal = new HashMap<>();
         for(CartDTO cartDTO : cartLists) {
-            int total = cartDTO.getProduct().getProductPrice() * cartDTO.getProductCount();
-            System.out.println("total = " + total);
-            productTotal.put(cartDTO.getId(), total);
+            int total = cartDTO.getProductPrice() * cartDTO.getCount();
+            productTotal.put(cartDTO.getCartProductId(), total);
         }
         return productTotal;
-    }
-
-    @Override
-    public MemberDTO getMember(AddPaymentDTO paymentDTO) {
-
-        Cart cart = cartRepository.findById(paymentDTO.getCartId().get(0)).orElseThrow();
-        MemberDTO memberDTO = new MemberDTO();
-        memberDTO.setNickName(cart.getMember().getNickName());
-        memberDTO.setAddress(cart.getMember().getAddress());
-        memberDTO.setAddressDetail(cart.getMember().getAddressDetail());
-        memberDTO.setPhone(cart.getMember().getPhone());
-        return memberDTO;
     }
 
     // 전체 총계
@@ -128,19 +118,9 @@ public class CartServiceImpl implements CartService{
     public int subTotal(List<CartDTO> cartLists) {
         int subTotal=0;
         for(CartDTO cartDTO : cartLists){
-            subTotal+= cartDTO.getProductCount()* cartDTO.getProduct().getProductPrice();
+            subTotal+= cartDTO.getCount()* cartDTO.getProductPrice();
         }
         return subTotal;
-    }
-
-    @Override
-    public List<String> findSize(Long productId) {
-        return optionsRepository.findSizesByProductId(productId);
-    }
-
-    @Override
-    public List<String> findColor(Long productId) {
-        return optionsRepository.findColorsByProductId(productId);
     }
 
 

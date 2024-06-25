@@ -1,13 +1,11 @@
 package com.ohrray.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
 
 @Entity
-@Getter @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class ProductQnA extends BaseEntity{
+@Data
+public class ProductQnA {
     //상품문의 pk
     @Id @GeneratedValue
     @Column(name = "PRODUCT_QNA_ID")
