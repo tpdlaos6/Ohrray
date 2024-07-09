@@ -34,7 +34,9 @@ https://youtu.be/2FKU__ETeFA
 - 회원정보 CRUD / 스프링 시큐리티 연계 / 소셜로그인 / 카카오 주소 API
 <br>
 
-## 🔥 담당 역할
+## 🔥 담당 역할 및 맡은 기능
+- PM
 - DB설계 및 ERD
+- 게시판 CRUD
 - 장바구니 기능 및 결제 API
 - 고객센터
