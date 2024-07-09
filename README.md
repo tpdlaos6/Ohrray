@@ -36,7 +36,7 @@ https://youtu.be/2FKU__ETeFA
 
 ## 🔥 담당 역할 및 맡은 기능
 - PM
-- DB설계 및 ERD
+- JPA를 활용하여 ORP관점에서의 DB설계 및 ERD 작성
 - 게시판 CRUD
 - 장바구니 기능 및 결제 API
 - 고객센터
